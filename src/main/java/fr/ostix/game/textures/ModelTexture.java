@@ -7,6 +7,8 @@ public class ModelTexture {
     private float shineDamper = 0;
     private float reflectivity = 0;
 
+    private int nubersOfRows = 1;
+
     private boolean isTransparency = false;
     private boolean useFakeLighting = false;
 
@@ -30,6 +32,10 @@ public class ModelTexture {
     public ModelTexture setTransparency(boolean transparency) {
         isTransparency = transparency;
         return this;
+    }
+
+    public int getNubersOfRows() {
+        return nubersOfRows;
     }
 
     public int geID() {

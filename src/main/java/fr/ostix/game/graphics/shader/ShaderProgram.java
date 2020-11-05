@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 
@@ -66,8 +67,11 @@ public abstract class ShaderProgram {
     protected void loadFloatToUniform(int location,float value){
         glUniform1f(location,value);
     }
+    protected void loadVerctor2fToUniform(int location, Vector2f vector){
+        glUniform2f(location,vector.x,vector.y);
+    }
 
-    protected void loadVerctorToUniform(int location, Vector3f vector){
+    protected void loadVerctor3fToUniform(int location, Vector3f vector){
         glUniform3f(location,vector.x,vector.y,vector.z);
     }
 

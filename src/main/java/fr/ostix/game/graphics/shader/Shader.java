@@ -5,6 +5,7 @@ import fr.ostix.game.graphics.Color;
 import fr.ostix.game.entities.Light;
 import fr.ostix.game.math.Maths;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 
 public class Shader extends ShaderProgram{
 
@@ -17,6 +18,8 @@ public class Shader extends ShaderProgram{
     private int location_reflectivity;
     private int location_useFakeLighting;
     private int location_skyColour;
+    private int location_numberOfRows;
+    private int location_offset;
 
 
     public Shader() {
@@ -41,10 +44,20 @@ public class Shader extends ShaderProgram{
         location_reflectivity = super.getUniformLocation("shineDamper");
         location_useFakeLighting = super.getUniformLocation("useFakeLighting");
         location_skyColour = super.getUniformLocation("skyColour");
+        location_numberOfRows = super.getUniformLocation("numberOfRows");
+        location_offset = super.getUniformLocation("offset");
+    }
+
+    public void loadOffset(float x ,float y){
+        super.loadVerctor2fToUniform(location_offset,new Vector2f(x,y));
+    }
+
+    public void loadNumbuerOfRows(float numberOfRows){
+        super.loadFloatToUniform(location_numberOfRows,numberOfRows);
     }
 
     public void loadSkyColour(Color colour){
-        super.loadVerctorToUniform(location_skyColour,colour.getVec3f());
+        super.loadVerctor3fToUniform(location_skyColour,colour.getVec3f());
     }
 
     public void loadFakeLightingVariable(boolean isFakeLighting){
@@ -57,8 +70,8 @@ public class Shader extends ShaderProgram{
     }
 
     public void loadLight(Light light){
-        super.loadVerctorToUniform(location_lightPosition, light.getPosition());
-        super.loadVerctorToUniform(location_lightColour,light.getColourVec3f());
+        super.loadVerctor3fToUniform(location_lightPosition, light.getPosition());
+        super.loadVerctor3fToUniform(location_lightColour,light.getColourVec3f());
     }
 
     public void loadTransformationMatrix(Matrix4f matrix){

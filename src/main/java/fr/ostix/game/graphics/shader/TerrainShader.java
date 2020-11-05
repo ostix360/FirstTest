@@ -61,7 +61,7 @@ public class TerrainShader extends ShaderProgram{
     }
 
     public void loadSkyColour(Color colour){
-        super.loadVerctorToUniform(location_skyColour,colour.getVec3f());
+        super.loadVerctor3fToUniform(location_skyColour,colour.getVec3f());
     }
 
     public void loadShineVariables(float damper,float reflectivity){
@@ -70,8 +70,8 @@ public class TerrainShader extends ShaderProgram{
     }
 
     public void loadLight(Light light){
-        super.loadVerctorToUniform(location_lightPosition, light.getPosition());
-        super.loadVerctorToUniform(location_lightColour,light.getColourVec3f());
+        super.loadVerctor3fToUniform(location_lightPosition, light.getPosition());
+        super.loadVerctor3fToUniform(location_lightColour,light.getColourVec3f());
     }
 
     public void loadTransformationMatrix(Matrix4f matrix){
