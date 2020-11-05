@@ -3,11 +3,10 @@ package fr.ostix.game.world;
 import fr.ostix.game.core.loader.Loader;
 import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.math.Maths;
-import fr.ostix.game.textures.TerrainTexture;
-import fr.ostix.game.textures.TerrainTexturePack;
+import fr.ostix.game.world.texture.TerrainTexture;
+import fr.ostix.game.world.texture.TerrainTexturePack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.MarkerManager;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 

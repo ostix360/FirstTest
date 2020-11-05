@@ -1,4 +1,4 @@
-package fr.ostix.game.textures;
+package fr.ostix.game.graphics.textures;
 
 import org.lwjgl.BufferUtils;
 
@@ -8,11 +8,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 
 public class Texture {
 
-    private int width,height,id;
+    private final int width;
+    private final int height;
+    private final int id;
 
     public Texture(int width, int height, int id) {
         this.width = width;
@@ -20,14 +21,11 @@ public class Texture {
         this.id = id;
     }
 
-    public static Texture loadTexture(String path)
-    {
+    public static Texture loadTexture(String path) {
         BufferedImage image = null;
-        try
-        {
+        try {
             image = ImageIO.read(Texture.class.getResource(path));
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         assert image != null;

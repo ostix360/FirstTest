@@ -1,28 +1,7 @@
 package fr.ostix.game.core;
 
-import fr.ostix.game.core.loader.OBJFileLoader;
-import fr.ostix.game.entities.Camera;
-import fr.ostix.game.entities.Entity;
-import fr.ostix.game.entities.Player;
-import fr.ostix.game.graphics.Color;
-import fr.ostix.game.entities.Light;
-import fr.ostix.game.graphics.render.MasterRenderer;
-import fr.ostix.game.core.loader.Loader;
-import fr.ostix.game.graphics.model.MeshModel;
-import fr.ostix.game.graphics.model.TextureModel;
-import fr.ostix.game.textures.ModelTexture;
-import fr.ostix.game.textures.TerrainTexture;
-import fr.ostix.game.textures.TerrainTexturePack;
-import fr.ostix.game.world.Terrain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.util.vector.Vector3f;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 public class MainGame {
 

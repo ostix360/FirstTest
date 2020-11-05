@@ -13,7 +13,7 @@ public class Player extends Entity {
     private static final Logger LOGGER = LogManager.getLogger(Player.class);
 
     private static final float RUN_SPEED = 160;
-    private static final float TURN_SPEED = 1280;
+    private static final float TURN_SPEED = 780;
     private static final float GRAVITY = -6;
     private static final float JUMP_POWER = 100;
 

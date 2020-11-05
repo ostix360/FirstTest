@@ -1,13 +1,10 @@
 package fr.ostix.game.graphics.render;
 
-import fr.ostix.game.entities.Entity;
 import fr.ostix.game.graphics.model.MeshModel;
-import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.shader.TerrainShader;
 import fr.ostix.game.math.Maths;
-import fr.ostix.game.textures.ModelTexture;
-import fr.ostix.game.textures.TerrainTexturePack;
 import fr.ostix.game.world.Terrain;
+import fr.ostix.game.world.texture.TerrainTexturePack;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;

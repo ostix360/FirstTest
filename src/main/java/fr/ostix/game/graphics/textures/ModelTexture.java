@@ -1,13 +1,13 @@
-package fr.ostix.game.textures;
+package fr.ostix.game.graphics.textures;
 
 
 public class ModelTexture {
     private final int textureID;
 
-    private float shineDamper = 0;
-    private float reflectivity = 0;
+    private final float shineDamper = 0;
+    private final float reflectivity = 0;
 
-    private int nubersOfRows = 1;
+    private final int nubersOfRows = 1;
 
     private boolean isTransparency = false;
     private boolean useFakeLighting = false;

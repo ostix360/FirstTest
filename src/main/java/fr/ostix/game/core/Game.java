@@ -9,14 +9,17 @@ import fr.ostix.game.entities.Player;
 import fr.ostix.game.graphics.Color;
 import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.model.TextureModel;
+import fr.ostix.game.graphics.render.GUIRenderer;
 import fr.ostix.game.graphics.render.MasterRenderer;
-import fr.ostix.game.textures.ModelTexture;
-import fr.ostix.game.textures.TerrainTexture;
-import fr.ostix.game.textures.TerrainTexturePack;
+import fr.ostix.game.graphics.textures.ModelTexture;
+import fr.ostix.game.gui.GUITexture;
 import fr.ostix.game.world.MasterTerrain;
 import fr.ostix.game.world.Terrain;
+import fr.ostix.game.world.texture.TerrainTexture;
+import fr.ostix.game.world.texture.TerrainTexturePack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.util.ArrayList;
@@ -24,7 +27,6 @@ import java.util.List;
 import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 
 public class Game {
 
@@ -36,6 +38,7 @@ public class Game {
     public static boolean render = false;
 
     private List<Entity> forest;
+    private List<GUITexture> guis;
 
     private final Loader loader = new Loader();
     private Light light;
@@ -43,6 +46,7 @@ public class Game {
     private MasterRenderer renderer;
     private Player player;
     private MasterTerrain world;
+    private GUIRenderer guiRender;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -97,10 +101,15 @@ public class Game {
                     0, 0, 0, 0.3f));
         }
 
+        guis = new ArrayList<>();
+        GUITexture gui1 = new GUITexture(loader.loadTexture("gui/socuwan").getId(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        guis.add(gui1);
+        guiRender = new GUIRenderer(loader);
+
+
         player = new Player(playerModel, new Vector3f(100, 0, -100), 0, 0, 0, 1);
 
         light = new Light(new Vector3f(0, 600, 600), Color.WHITE);
-
 
         cam = new Camera(player);
 
@@ -117,11 +126,12 @@ public class Game {
 
     private void stop() {
         running = false;
-        renderer.cleanUp();
-        loader.cleanUP();
     }
 
     public void exit() {
+        guiRender.cleanUP();
+        renderer.cleanUp();
+        loader.cleanUP();
         DisplayManager.closeDisplay();
         LOGGER.info("stop");
         System.exit(0);
@@ -194,6 +204,8 @@ public class Game {
             renderer.processEntity(e);
         }
         renderer.render(light, cam);
+
+        guiRender.render(guis);
     }
 
 

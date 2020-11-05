@@ -1,8 +1,8 @@
-package fr.ostix.game.textures;
+package fr.ostix.game.world.texture;
 
 public class TerrainTexture {
 
-    private int textureID;
+    private final int textureID;
 
     public TerrainTexture(int textureID) {
         this.textureID = textureID;
