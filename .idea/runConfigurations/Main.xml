@@ -1,0 +1,9 @@
+<component name='ProjectRunConfigurationManager'>
+  <configuration default='false' name='Main' type='Application' factoryName='Application' singleton='true'>
+    <option name='MAIN_CLASS_NAME' value='fr.ostix.game.core.MainGame' />
+    <option name='VM_PARAMETERS' value='-Djava.library.path=../natives -Dgame.logging.console.level=debug' />
+    <option name='PROGRAM_PARAMETERS' value='' />
+    <option name='WORKING_DIRECTORY' value='$PROJECT_DIR$/run' />
+    <module name='$PROJECT_NAME$.main' />
+  </configuration>
+</component>

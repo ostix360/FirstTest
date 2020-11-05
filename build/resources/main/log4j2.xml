@@ -1,0 +1,34 @@
+<Configuration status='WARN' package='fr.ostix.game'>
+    <Appenders>
+        <Console name="SysOut" target="SYSTEM_OUT" >
+            <PatternLayout
+                    pattern="%highlight{[%d{HH:mm:ss}] [%t/%level] [%c{7.}]: %msg%n}"/>
+        </Console>
+        <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="[%d{ddMMMyyyy HH:mm:ss.SSS}] [%t/%level] [%logger]: %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="10" fileIndex="max"/>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="DebugFile" fileName="logs/debug.log" filePattern="logs/debug-%i.log.gz">
+            <PatternLayout
+                    pattern="[%d{ddMMMyyyy HH:mm:ss.SSS}] [%t/%level] [%logger]: %msg%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="200MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10" fileIndex="max"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Logger level="${sys:game.logging.consol.level:-debug}" name="fr.ostix"/>
+        <Root level="all">
+            <AppenderRef ref="SysOut" level="${sys:game.logging.console.level:-info}"/>
+            <AppenderRef ref="File" level="${sys:game.logging.console.level:-info}"/>
+            <AppenderRef ref="DebugFile" level="${sys:game.logging.console.level:-debug}"/>
+        </Root>
+    </Loggers>
+</Configuration>

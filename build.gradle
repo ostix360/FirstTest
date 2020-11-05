@@ -1,0 +1,62 @@
+import groovy.xml.MarkupBuilder
+
+plugins {
+    id 'java'
+}
+
+def MAIN_CLASS = 'fr.ostix.game.core.MainGame'
+group 'fr.ostix.game'
+version '1.0_Alpha'
+
+
+
+repositories {
+    mavenCentral()
+}
+
+task runConfiguration {
+    //Run
+    def run = new File("run")
+    if (!run.exists()) run.mkdirs()
+
+
+    //Config
+    def runConfigurationsDir = new File(".idea/runConfigurations")
+    runConfigurationsDir.mkdirs()
+    def taskName = 'Main'
+    def mainClass = MAIN_CLASS
+    def props = '-Djava.library.path=../natives -Dgame.logging.console.level=debug'
+    def args = ''
+
+    def writer = new FileWriter(new File(runConfigurationsDir, "${taskName}.xml"))
+    def xml = new MarkupBuilder(writer)
+    xml.component(name: "ProjectRunConfigurationManager") {
+        configuration(default: 'false', name: taskName, type: "Application", factoryName: "Application", singleton: "true") {
+            option(name: 'MAIN_CLASS_NAME', value: mainClass)
+            option(name: 'VM_PARAMETERS', value: props)
+            option(name: 'PROGRAM_PARAMETERS', value: args)
+            option(name: 'WORKING_DIRECTORY', value: '$PROJECT_DIR$/run')
+            module(name: '$PROJECT_NAME$.main')
+        }
+    }
+
+}
+
+
+dependencies {
+    implementation fileTree('libs')
+
+    // https://mvnrepository.com/artifact/org.lwjgl/lwjgl
+    implementation group: 'org.lwjgl', name: 'lwjgl', version: '3.2.3'
+    // https://mvnrepository.com/artifact/org.lwjgl/lwjgl-opengl
+    implementation group: 'org.lwjgl', name: 'lwjgl-opengl', version: '3.2.3'
+    // https://mvnrepository.com/artifact/org.lwjgl/lwjgl-openal
+    implementation group: 'org.lwjgl', name: 'lwjgl-openal', version: '3.2.3'
+    // https://mvnrepository.com/artifact/org.lwjgl/lwjgl-glfw
+    implementation group: 'org.lwjgl', name: 'lwjgl-glfw', version: '3.2.3'
+
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.3'
+}
