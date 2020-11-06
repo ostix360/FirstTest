@@ -21,27 +21,41 @@ public class Loader {
     private final List<Integer> vbos = new ArrayList<>();
     private final List<Integer> textures = new ArrayList<>();
 
+    /**
+     * @param positions Tableaux des positions des Arrets
+     * @param colors    Tableaux definisant la couleur de chaque arretes
+     * @param indices   Tableaux d'indice pour optimiser le nombre d'arrete
+     */
     public MeshModel loadToVAO(float[] positions, float[] colors, int[] indices) {
-        int vaoID = createVAO();
-        bindIndicesBuffer(indices);
+        int vaoID = createVAO();            //creation d'une addresse memoir pour le VAO
+        bindIndicesBuffer(indices);         //Definition des indices dans une memoir tampon (Buffer)
         storeDataInAttributeList(0, 3, positions);
         storeDataInAttributeList(1, 4, colors);
         unbindVAO();
         return new MeshModel(vaoID, indices.length);
     }
 
+    /**
+     * @param positions     Tableaux des positions des Arrets
+     * @param textureCoords Tableaux des coordonées de la texture par rapport au model
+     * @param normals       Tableaux des Vecteur Normals
+     * @param indices       Tableaux d'indice pour optimiser le nombre d'arrete
+     */
     public MeshModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
-        int vaoID = createVAO();
-        bindIndicesBuffer(indices);
-        storeDataInAttributeList(0, 3, positions);
-        storeDataInAttributeList(1, 2, textureCoords);
-        storeDataInAttributeList(2, 3, normals);
+        int vaoID = createVAO();            //creation d'une addresse memoir pour le VAO
+        bindIndicesBuffer(indices);         //Definition des indices dans une memoir tampon (Buffer)
+        storeDataInAttributeList(0, 3, positions);      //Integration des positions dans notre addresse memoir VAO avec comme index 0 et nombre de valeur par position 3
+        storeDataInAttributeList(1, 2, textureCoords);      //Integration des positions de la texture dans notre addresse memoir VAO avec comme index 1 et nombre de valeur par position 2
+        storeDataInAttributeList(2, 3, normals);    //Integration des vecteur normals dans notre addresse memoir VAO avec comme index 1 et nombre de valeur par position 3
         unbindVAO();
         return new MeshModel(vaoID, indices.length);
     }
 
+    /**
+     * @param positions Tableaux des positions des Arrets
+     */
     public MeshModel loadToVAO(float[] positions) {
-        int vaoID = createVAO();
+        int vaoID = createVAO();            //creation d'une addresse memoir pour le VAO
         storeDataInAttributeList(0, 2, positions);
         unbindVAO();
         return new MeshModel(vaoID, positions.length / 2);
@@ -57,56 +71,57 @@ public class Loader {
     }
 
     private int createVAO() {
-        int vaoID = GL30.glGenVertexArrays();
+        int vaoID = GL30.glGenVertexArrays();           //creation d'une addresse memoir pour le VAO
         vaos.add(vaoID);
-        GL30.glBindVertexArray(vaoID);
+        GL30.glBindVertexArray(vaoID);     //activation de la memoir prevu pour le model
         return vaoID;
     }
 
-    private void storeDataInAttributeList(int attrib,int vecSize ,float[] data) {
-        int vbo = glGenBuffers();
-        vbos.add(vbo);
-        glBindBuffer(GL_ARRAY_BUFFER,vbo);
-        FloatBuffer buffer = createFloatBuffer(data);
-        glBufferData(GL_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
-        GL20.glVertexAttribPointer(attrib,vecSize, GL11.GL_FLOAT,false,0,0);
-        glBindBuffer(GL_ARRAY_BUFFER,0);
+    private void storeDataInAttributeList(int attrib, int vecSize, float[] data) {
+        int vbo = glGenBuffers();           //creation d'une addresse memoir pour le VBO
+        vbos.add(vbo);                      //ajout de l'addresse memoir dans la liste de VertexBufferObject
+        glBindBuffer(GL_ARRAY_BUFFER, vbo); //Activation de l'addresse memoir
+        FloatBuffer buffer = createFloatBuffer(data);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
+        GL20.glVertexAttribPointer(attrib, vecSize, GL11.GL_FLOAT, false, 0, 0);     //Definition de l'index,nombre de donné a lire dans le tableau par arrete,type de variable,sont des vecteur normalizer ou pas dans la memoir tampon
+        glBindBuffer(GL_ARRAY_BUFFER, 0);       //Desactivation du VBO actife
     }
 
     private void bindIndicesBuffer(int[] indices) {
-        int vbo = glGenBuffers();
-        vbos.add(vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo);
-        IntBuffer buffer =createIntBuffer(indices);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,buffer,GL_STATIC_DRAW);
+        int vbo = glGenBuffers();           //creation d'une addresse memoir pour le VBO
+        vbos.add(vbo);                      //ajout de l'addresse memoir dans la liste de VertexBufferObject
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);  //Activation de l'addresse memoir
+        IntBuffer buffer = createIntBuffer(indices);     //creation d'une memoir tampon (Buffer) du tableau d'indices
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW); //Definition des indices dans une memoir tampon (Buffer)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);       //Desactivation du VBO actife
     }
 
-    private IntBuffer createIntBuffer(int[] data){
-        IntBuffer buffer = BufferUtils.createIntBuffer(data.length);
-        buffer.put(data);
-        buffer.flip();
+    private IntBuffer createIntBuffer(int[] data) {
+        IntBuffer buffer = BufferUtils.createIntBuffer(data.length);  //Creation d'une memoir tampon avec la longeur du tableau
+        buffer.put(data);         //On met les données dans la memoir tampon
+        buffer.flip();              //Permet de lire la memoir tampon
         return buffer;
     }
 
-    private FloatBuffer createFloatBuffer(float[] data){
-        FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
-        buffer.put(data);
-        buffer.flip();
+    private FloatBuffer createFloatBuffer(float[] data) {
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);   //Creation d'une memoir tampon avec la longeur du tableau
+        buffer.put(data);         //On met les données dans la memoir tampon
+        buffer.flip();              //Permet de lire la memoir tampon
         return buffer;
     }
 
-    private void unbindVAO(){
-        GL30.glBindVertexArray(0);
+    private void unbindVAO() {
+        GL30.glBindVertexArray(0);      //Desactivation du VAO actife
     }
 
-    public void cleanUP(){
-        for (int i:vaos){
+    public void cleanUP() {
+        for (int i : vaos) {
             GL30.glDeleteVertexArrays(i);
         }
-        for (int i:vbos){
+        for (int i : vbos) {
             GL30.glDeleteVertexArrays(i);
         }
-        for (int i:textures){
+        for (int i : textures) {
             GL11.glDeleteTextures(i);
         }
     }

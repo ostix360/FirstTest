@@ -31,7 +31,7 @@ public class GUIGame {
             }
             helthTexture.setPosition(position);
         }
-        guis.add(helthTexture);
+        //guis.add(helthTexture);
     }
 
     public void render() {

@@ -35,9 +35,9 @@ public class Color {
     }
 
     public Color(float red, float green, float blue, float alpha) {
-        this.red = Maths.clampf(red, 0, 1);
-        this.green = Maths.clampf(green, 0, 1);
-        this.blue = Maths.clampf(blue, 0, 1);
+        this.red = Maths.clampf(red, 0, 10);
+        this.green = Maths.clampf(green, 0, 10);
+        this.blue = Maths.clampf(blue, 0, 10);
         this.alpha = Maths.clampf(alpha, 0, 1);
     }
 

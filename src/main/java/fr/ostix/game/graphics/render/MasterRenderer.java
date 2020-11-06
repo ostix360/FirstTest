@@ -3,8 +3,8 @@ package fr.ostix.game.graphics.render;
 import fr.ostix.game.core.DisplayManager;
 import fr.ostix.game.entities.Camera;
 import fr.ostix.game.entities.Entity;
-import fr.ostix.game.graphics.Color;
 import fr.ostix.game.entities.Light;
+import fr.ostix.game.graphics.Color;
 import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.shader.Shader;
 import fr.ostix.game.graphics.shader.TerrainShader;
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class MasterRenderer {
     private static final float FOV = 70f;
@@ -36,7 +35,7 @@ public class MasterRenderer {
     private final TerrainShader terrainShader = new TerrainShader();
 
     private final Map<TextureModel, List<Entity>> entities = new HashMap<>();
-    private List<Terrain> terrains = new ArrayList<>();
+    private final List<Terrain> terrains = new ArrayList<>();
 
     public MasterRenderer() {
         enableCulling();
@@ -45,17 +44,17 @@ public class MasterRenderer {
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
     }
 
-    public void render(Light sun, Camera cam) {
+    public void render(List<Light> ligths, Camera cam) {
         this.initFrame(Color.GRAY);
         shader.bind();
         shader.loadSkyColour(skyColor);
-        shader.loadLight(sun);
+        shader.loadLights(ligths);
         shader.loadViewMatrix(cam);
         entityRenderer.render(entities);
         shader.unBind();
         terrainShader.bind();
         terrainShader.loadSkyColour(skyColor);
-        terrainShader.loadLight(sun);
+        terrainShader.loadLights(ligths);
         terrainShader.loadViewMatrix(cam);
         terrainRenderer.render(terrains);
         terrains.clear();

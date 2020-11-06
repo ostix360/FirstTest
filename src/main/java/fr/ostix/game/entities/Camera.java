@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.vector.Vector3f;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class Camera {
 
@@ -14,10 +14,12 @@ public class Camera {
     private float distanceFromPlayer = 50;
     private float angleAroundPlayer = 0;
 
-    private final Vector3f position = new Vector3f(100,35,0);
+    private final Vector3f position = new Vector3f(100, 35, 0);
     float pitch = 20;
     float yaw = 0;
     private float roll;
+
+    float elapsedMouseDY;
 
     private final Player player;
 
@@ -25,26 +27,19 @@ public class Camera {
         this.player = player;
     }
 
-    public void move(){
+    private float getTerrainheight;
+
+    public void move(float getTerrainheight) {
+        this.getTerrainheight = getTerrainheight + 3;
         caculateZoom();
         calculateAngleAroundPlayerAndPitch();
         float horizontalDistance = calculateHorizontalDistance();
         float verticalDistance = calculateVerticalDistance();
-        caculateCameraPosition(horizontalDistance,verticalDistance);
+        caculateCameraPosition(horizontalDistance, verticalDistance);
         this.yaw = 180 - (player.getRoty() + angleAroundPlayer);
-
     }
 
-    private void caculateCameraPosition(float horzontalDistance,float verticalDistance){
-        float theta = player.getRoty() + angleAroundPlayer;
-        float xoffset = (float) (horzontalDistance * Math.sin(Math.toRadians(theta)));
-        float zoffset = (float) (horzontalDistance * Math.cos(Math.toRadians(theta)));
-        position.x = player.getPosition().x -xoffset;
-        position.y = player.getPosition().y + 9 + verticalDistance;
-        position.z = player.getPosition().z -zoffset;
-    }
-
-    private float calculateHorizontalDistance(){
+    private float calculateHorizontalDistance() {
         return (float) (distanceFromPlayer * Math.cos(Math.toRadians(pitch)));
     }
 
@@ -55,26 +50,40 @@ public class Camera {
     private void caculateZoom(){
         float zoomLevel = Input.getMouseDWhell();
         distanceFromPlayer -= zoomLevel;
-        if (distanceFromPlayer <= 3){
+        if (distanceFromPlayer <= 3) {
             distanceFromPlayer = 3;
         }
-        if (distanceFromPlayer >= 125){
+        if (distanceFromPlayer >= 125) {
             distanceFromPlayer = 125;
         }
     }
 
-    private void calculateAngleAroundPlayerAndPitch(){
-        if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]){
-            float angleChange = Input.mouseDX* 0.1f;
+    private void caculateCameraPosition(float horzontalDistance, float verticalDistance) {
+        float theta = player.getRoty() + angleAroundPlayer;
+        float xoffset = (float) (horzontalDistance * Math.sin(Math.toRadians(theta)));
+        float zoffset = (float) (horzontalDistance * Math.cos(Math.toRadians(theta)));
+        position.x = player.getPosition().x - xoffset;
+        position.y = player.getPosition().y + 9 + verticalDistance;
+        if (position.y < getTerrainheight) {
+            position.y = getTerrainheight;
+        }
+        position.z = player.getPosition().z - zoffset;
+    }
+
+    private void calculateAngleAroundPlayerAndPitch() {
+        if (Input.keysMouse[GLFW_MOUSE_BUTTON_1]) {
+            float angleChange = Input.mouseDX * 0.1f;
             angleAroundPlayer -= angleChange;
-            float pitchChange = Input.mouseDY* 0.1f;
+            float pitchChange = Input.mouseDY * 0.1f;
             pitch += pitchChange;
-            if (pitch >= 90){
+            if (pitch >= 90) {
                 pitch = 90;
             }
             if (pitch <= -4){
+                if (elapsedMouseDY < pitchChange) distanceFromPlayer += pitchChange * 1.4;
                 pitch = -4;
             }
+            elapsedMouseDY = pitchChange;
         }
     }
 

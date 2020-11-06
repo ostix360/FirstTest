@@ -39,10 +39,9 @@ public class Game {
     public static boolean render = false;
 
     private List<Entity> forest;
-    private List<GUITexture> guis;
+    private final List<Light> lights = new ArrayList<>();
 
     private final Loader loader = new Loader();
-    private Light light;
     private Camera cam;
     private MasterRenderer renderer;
     private Player player;
@@ -103,10 +102,11 @@ public class Game {
                     0, 0, 0, 0.3f));
         }
 
-        guis = new ArrayList<>();
-        GUITexture gui1 = new GUITexture(new ModelTexture(loader.loadTexture("gui/socuwan")), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        List<GUITexture> guis = new ArrayList<>();
+        GUITexture gui1 = new GUITexture(new ModelTexture(loader.loadTexture("gui/socuwan")), new Vector2f(0.9f, 0.9f), new Vector2f(0.1f, 0.1f));
         guis.add(gui1);
         guiRender = new GUIRenderer(loader);
+
 
         GUITexture guiHealth = new GUITexture(new ModelTexture(loader.loadTexture("gui/health")), new Vector2f(-0.5f, -0.5f), new Vector2f(0.25f, 0.25f));
 
@@ -115,7 +115,11 @@ public class Game {
 
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
 
-        light = new Light(new Vector3f(0, 600, 600), Color.WHITE);
+        Light light = new Light(new Vector3f(0, 600, 600), Color.WHITE);
+        Light light2 = new Light(new Vector3f(0, 600, -600), Color.CYAN);
+
+        lights.add(light);
+        // lights.add(light2);
 
         cam = new Camera(player);
 
@@ -152,7 +156,7 @@ public class Game {
         double elapsed;
         double elapsedRender;
         double nanoSeconds = 1000000000.0 / 60;
-        double renderTime = 1000000000.0 / 90;
+        double renderTime = 1000000000.0 / 30;
 
         int ticks = 0;
         int frames = 0;
@@ -196,7 +200,7 @@ public class Game {
 
     private void update() {
         Input.updateInput(glfwGetCurrentContext());
-        cam.move();
+        cam.move(world.getTerrainHeight(cam.getPosition().x, cam.getPosition().z));
         player.move(world);
         guiGame.update();
         glfwPollEvents();
@@ -210,7 +214,7 @@ public class Game {
         for (Entity e : forest) {
             renderer.processEntity(e);
         }
-        renderer.render(light, cam);
+        renderer.render(lights, cam);
 
         guiGame.render();
     }
