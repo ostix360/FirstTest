@@ -6,14 +6,14 @@ in vec3 normal;
 
 out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
-out vec3 toLightVector;
+out vec3 toLightVector[2];
 out vec3 toCameraVector;
 out float visibility;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
-uniform vec3 lightPosition;
+uniform vec3 lightPosition[2];
 uniform float useFakeLighting;
 
 uniform float numberOfRows;
@@ -29,15 +29,17 @@ void main() {
     pass_textureCoords = (textureCoords/numberOfRows)+offset;
 
     vec3 actualNormal = normal;
-    if(useFakeLighting == 1){
-        actualNormal = vec3(0.0,1.0,0.0);
+    if (useFakeLighting == 1){
+        actualNormal = vec3(0.0, 1.0, 0.0);
     }
 
-    surfaceNormal = (transformationMatrix * vec4(actualNormal,0.0)).xyz;
-    toLightVector = lightPosition - worldPosition.xyz;
-    toCameraVector = (inverse(viewMatrix) * vec4(0.0,0.0,0.0,1.0)).xyz -worldPosition.xyz;
+    surfaceNormal = (transformationMatrix * vec4(actualNormal, 0.0)).xyz;
+    for (int i = 0; i < 2; i++){
+        toLightVector[i] = lightPosition[i] - worldPosition.xyz;
+    }
+    toCameraVector = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz -worldPosition.xyz;
 
     float distance = length(relativePositionToCamera.xyz);
-    visibility = exp(-pow((distance * density),gradient));
-    visibility = clamp(visibility,0.0,1.0);
+    visibility = exp(-pow((distance * density), gradient));
+    visibility = clamp(visibility, 0.0, 1.0);
 }
