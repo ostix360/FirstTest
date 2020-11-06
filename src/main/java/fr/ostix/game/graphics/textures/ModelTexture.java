@@ -7,7 +7,7 @@ public class ModelTexture {
     private final float shineDamper = 0;
     private final float reflectivity = 0;
 
-    private final int nubersOfRows = 1;
+    private int nubersOfRows = 1;
 
     private boolean isTransparency = false;
     private boolean useFakeLighting = false;
@@ -32,6 +32,10 @@ public class ModelTexture {
     public ModelTexture setTransparency(boolean transparency) {
         isTransparency = transparency;
         return this;
+    }
+
+    public void setNubersOfRows(int nubersOfRows) {
+        this.nubersOfRows = nubersOfRows;
     }
 
     public int getNubersOfRows() {

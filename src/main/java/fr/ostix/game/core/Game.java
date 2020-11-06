@@ -12,6 +12,7 @@ import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.render.GUIRenderer;
 import fr.ostix.game.graphics.render.MasterRenderer;
 import fr.ostix.game.graphics.textures.ModelTexture;
+import fr.ostix.game.gui.GUIGame;
 import fr.ostix.game.gui.GUITexture;
 import fr.ostix.game.world.MasterTerrain;
 import fr.ostix.game.world.Terrain;
@@ -47,6 +48,7 @@ public class Game {
     private Player player;
     private MasterTerrain world;
     private GUIRenderer guiRender;
+    private GUIGame guiGame;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -102,12 +104,16 @@ public class Game {
         }
 
         guis = new ArrayList<>();
-        GUITexture gui1 = new GUITexture(loader.loadTexture("gui/socuwan").getId(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        GUITexture gui1 = new GUITexture(new ModelTexture(loader.loadTexture("gui/socuwan")), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
         guis.add(gui1);
         guiRender = new GUIRenderer(loader);
 
+        GUITexture guiHealth = new GUITexture(new ModelTexture(loader.loadTexture("gui/health")), new Vector2f(-0.5f, -0.5f), new Vector2f(0.25f, 0.25f));
+
 
         player = new Player(playerModel, new Vector3f(100, 0, -100), 0, 0, 0, 1);
+
+        guiGame = new GUIGame(guis, guiHealth, guiRender, player);
 
         light = new Light(new Vector3f(0, 600, 600), Color.WHITE);
 
@@ -192,6 +198,7 @@ public class Game {
         Input.updateInput(glfwGetCurrentContext());
         cam.move();
         player.move(world);
+        guiGame.update();
         glfwPollEvents();
     }
 
@@ -205,7 +212,7 @@ public class Game {
         }
         renderer.render(light, cam);
 
-        guiRender.render(guis);
+        guiGame.render();
     }
 
 

@@ -23,6 +23,10 @@ public class Player extends Entity {
 
     private boolean isInAir = false;
 
+    private final int health = 10;
+    private final int sprintTime = 60;
+    private final boolean isSprinting = false;
+
     public Player(TextureModel model, Vector3f position, float rotx, float roty, float rotz, float scale) {
         super(model, position, rotx, roty, rotz, scale);
     }
@@ -72,6 +76,14 @@ public class Player extends Entity {
         if (Input.keys[GLFW_KEY_SPACE]) {
             this.jump();
         }
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public int getSprintTime() {
+        return sprintTime;
     }
 }
 
