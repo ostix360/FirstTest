@@ -93,7 +93,6 @@ public class Loader {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);  //Activation de l'addresse memoir
         IntBuffer buffer = createIntBuffer(indices);     //creation d'une memoir tampon (Buffer) du tableau d'indices
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW); //Definition des indices dans une memoir tampon (Buffer)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);       //Desactivation du VBO actife
     }
 
     private IntBuffer createIntBuffer(int[] data) {

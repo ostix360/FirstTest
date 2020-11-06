@@ -38,7 +38,7 @@ public class Game {
     public static boolean tick = false;
     public static boolean render = false;
 
-    private List<Entity> forest;
+    private List<Entity> entities;
     private final List<Light> lights = new ArrayList<>();
 
     private final Loader loader = new Loader();
@@ -69,6 +69,8 @@ public class Game {
         fernModel.getModelTexture().setTransparency(true);
         TextureModel playerModel = new TextureModel(OBJFileLoader.loadModel("person", loader),
                 new ModelTexture(loader.loadTexture("playerTexture")));
+        TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lamp", loader),
+                new ModelTexture(loader.loadTexture("lamp")));
 
         Terrain terrain1 = new Terrain(-1f, -1f, loader, texturePack, blendMap, "heightmap");
         Terrain terrain2 = new Terrain(0f, -1f, loader, texturePack, blendMap, "heightmap");
@@ -85,22 +87,28 @@ public class Game {
 
         this.world = new MasterTerrain(world);
 
-        forest = new ArrayList<>();
+        entities = new ArrayList<>();
         Random r = new Random();
         for (int i = 0; i < 500; i++) {
             float x = r.nextFloat() * 1600 - 800;
             float z = r.nextFloat() * 1600 - 800;
-            forest.add(new Entity(treeModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
+            entities.add(new Entity(treeModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
                     0, 0, 0, 1.2f));
             x = r.nextFloat() * 1600 - 800;
             z = r.nextFloat() * 1600 - 800;
-            forest.add(new Entity(grassModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
+            entities.add(new Entity(grassModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
                     0, 0, 0, 0.6f));
             x = r.nextFloat() * 1600 - 800;
             z = r.nextFloat() * 1600 - 800;
-            forest.add(new Entity(fernModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
+            entities.add(new Entity(fernModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
                     0, 0, 0, 0.3f));
         }
+
+        entities.add(new Entity(lamp, new Vector3f(185, this.world.getTerrainHeight(185, 20), 20), 0, 0, 0, 1));
+        entities.add(new Entity(lamp, new Vector3f(370, this.world.getTerrainHeight(370, -200), -200), 0, 0, 0, 1));
+
+        Light light = new Light(new Vector3f(185, this.world.getTerrainHeight(185, 20) + 13, 20), Color.RED, new Vector3f(0.01f, 0.005f, 0.0004f));
+        Light light2 = new Light(new Vector3f(370, this.world.getTerrainHeight(370, -200), -200), Color.CYAN);
 
         List<GUITexture> guis = new ArrayList<>();
         GUITexture gui1 = new GUITexture(new ModelTexture(loader.loadTexture("gui/socuwan")), new Vector2f(0.9f, 0.9f), new Vector2f(0.1f, 0.1f));
@@ -115,11 +123,10 @@ public class Game {
 
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
 
-        Light light = new Light(new Vector3f(0, 600, 600), Color.WHITE);
-        Light light2 = new Light(new Vector3f(0, 600, -600), Color.CYAN);
 
         lights.add(light);
-        // lights.add(light2);
+        lights.add(new Light(new Vector3f(0, 1000, 600), Color.BLACK));
+        //lights.add(light2);
 
         cam = new Camera(player);
 
@@ -211,7 +218,7 @@ public class Game {
         for (Terrain t : this.world.getTerrains()) {
             renderer.processTerrain(t);
         }
-        for (Entity e : forest) {
+        for (Entity e : entities) {
             renderer.processEntity(e);
         }
         renderer.render(lights, cam);
