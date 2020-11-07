@@ -15,6 +15,7 @@ uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition[2];
 uniform float useFakeLighting;
+uniform float inverseNormal;
 
 uniform float numberOfRows;
 uniform vec2 offset;
@@ -31,6 +32,9 @@ void main() {
     vec3 actualNormal = normal;
     if (useFakeLighting == 1){
         actualNormal = vec3(0.0, 1.0, 0.0);
+    }
+    if (inverseNormal == 1){
+        actualNormal = -actualNormal;
     }
 
     surfaceNormal = (transformationMatrix * vec4(actualNormal, 0.0)).xyz;

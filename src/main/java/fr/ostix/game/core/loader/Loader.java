@@ -1,13 +1,22 @@
 package fr.ostix.game.core.loader;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
 import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.textures.Texture;
+import fr.ostix.game.graphics.textures.TextureData;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
@@ -16,6 +25,8 @@ import java.util.List;
 import static org.lwjgl.opengl.GL15.*;
 
 public class Loader {
+
+    private static final Logger LOGGER = LogManager.getLogger(Loader.class);
 
     private final List<Integer> vaos = new ArrayList<>();
     private final List<Integer> vbos = new ArrayList<>();
@@ -54,9 +65,9 @@ public class Loader {
     /**
      * @param positions Tableaux des positions des Arrets
      */
-    public MeshModel loadToVAO(float[] positions) {
+    public MeshModel loadToVAO(float[] positions, int dimensions) {
         int vaoID = createVAO();            //creation d'une addresse memoir pour le VAO
-        storeDataInAttributeList(0, 2, positions);
+        storeDataInAttributeList(0, dimensions, positions);
         unbindVAO();
         return new MeshModel(vaoID, positions.length / 2);
     }
@@ -68,6 +79,42 @@ public class Loader {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
         textures.add(texture.getId());
         return texture;
+    }
+
+    public int loadCubMap(String[] fileNames) {
+        int texID = glGenTextures();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, texID);
+
+        for (int i = 0; i < fileNames.length; i++) {
+            TextureData data = decodeTextureFile(fileNames[i]);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, data.getWigth(), data.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data.getBuffer());
+        }
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        textures.add(texID);
+        return texID;
+    }
+
+    private TextureData decodeTextureFile(String fileName) {
+        int width = 0;
+        int height = 0;
+        ByteBuffer buffer = null;
+        FileInputStream fis;
+        try {
+            fis = new FileInputStream(new File(Loader.class.getResource("/textures/skybox/" + fileName + ".png").toURI()));
+            PNGDecoder decoder = new PNGDecoder(fis);
+            width = decoder.getWidth();
+            height = decoder.getHeight();
+            buffer = ByteBuffer.allocateDirect(4 * width * height);
+            decoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
+            buffer.flip();
+            fis.close();
+        } catch (URISyntaxException | IOException e) {
+            LOGGER.error("Tried to load " + fileName + " , didn't work", e);
+            System.exit(-1);
+        }
+        return new TextureData(width, height, buffer);
     }
 
     private int createVAO() {

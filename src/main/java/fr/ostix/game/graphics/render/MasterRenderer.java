@@ -1,6 +1,7 @@
 package fr.ostix.game.graphics.render;
 
 import fr.ostix.game.core.DisplayManager;
+import fr.ostix.game.core.loader.Loader;
 import fr.ostix.game.entities.Camera;
 import fr.ostix.game.entities.Entity;
 import fr.ostix.game.entities.Light;
@@ -8,6 +9,7 @@ import fr.ostix.game.graphics.Color;
 import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.shader.Shader;
 import fr.ostix.game.graphics.shader.TerrainShader;
+import fr.ostix.game.skybox.SkyboxRenderer;
 import fr.ostix.game.world.Terrain;
 import org.lwjgl.util.vector.Matrix4f;
 
@@ -34,14 +36,17 @@ public class MasterRenderer {
     private final TerrainRenderer terrainRenderer;
     private final TerrainShader terrainShader = new TerrainShader();
 
+    private final SkyboxRenderer skyboxRenderer;
+
     private final Map<TextureModel, List<Entity>> entities = new HashMap<>();
     private final List<Terrain> terrains = new ArrayList<>();
 
-    public MasterRenderer() {
+    public MasterRenderer(Loader loader) {
         enableCulling();
         createProjectionMatirx();
         entityRenderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+        skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
     }
 
     public void render(List<Light> ligths, Camera cam) {
@@ -57,6 +62,7 @@ public class MasterRenderer {
         terrainShader.loadLights(ligths);
         terrainShader.loadViewMatrix(cam);
         terrainRenderer.render(terrains);
+        skyboxRenderer.render(cam);
         terrains.clear();
         entities.clear();
     }

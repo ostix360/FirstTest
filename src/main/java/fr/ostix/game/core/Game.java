@@ -70,7 +70,7 @@ public class Game {
         TextureModel playerModel = new TextureModel(OBJFileLoader.loadModel("person", loader),
                 new ModelTexture(loader.loadTexture("playerTexture")));
         TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lamp", loader),
-                new ModelTexture(loader.loadTexture("lamp")));
+                new ModelTexture(loader.loadTexture("lamp")).setInverseNormal(true));
 
         Terrain terrain1 = new Terrain(-1f, -1f, loader, texturePack, blendMap, "heightmap");
         Terrain terrain2 = new Terrain(0f, -1f, loader, texturePack, blendMap, "heightmap");
@@ -93,7 +93,7 @@ public class Game {
             float x = r.nextFloat() * 1600 - 800;
             float z = r.nextFloat() * 1600 - 800;
             entities.add(new Entity(treeModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
-                    0, 0, 0, 1.2f));
+                    0, 0, 0, 0.2f));
             x = r.nextFloat() * 1600 - 800;
             z = r.nextFloat() * 1600 - 800;
             entities.add(new Entity(grassModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
@@ -104,10 +104,10 @@ public class Game {
                     0, 0, 0, 0.3f));
         }
 
-        entities.add(new Entity(lamp, new Vector3f(185, this.world.getTerrainHeight(185, 20), 20), 0, 0, 0, 1));
+        entities.add(new Entity(lamp, new Vector3f(100, this.world.getTerrainHeight(100, 0), 0), 0, 0, 0, 1));
         entities.add(new Entity(lamp, new Vector3f(370, this.world.getTerrainHeight(370, -200), -200), 0, 0, 0, 1));
 
-        Light light = new Light(new Vector3f(185, this.world.getTerrainHeight(185, 20) + 13, 20), Color.RED, new Vector3f(0.01f, 0.005f, 0.0004f));
+        Light light = new Light(new Vector3f(100, this.world.getTerrainHeight(100, 0) + 11f, 0), new Color(1.5f, 0, 0), new Vector3f(0.9f, 0.01f, 0.002f));
         Light light2 = new Light(new Vector3f(370, this.world.getTerrainHeight(370, -200), -200), Color.CYAN);
 
         List<GUITexture> guis = new ArrayList<>();
@@ -125,12 +125,12 @@ public class Game {
 
 
         lights.add(light);
-        lights.add(new Light(new Vector3f(0, 1000, 600), Color.BLACK));
+        lights.add(new Light(new Vector3f(0, 1000, 600), Color.GRAY));
         //lights.add(light2);
 
         cam = new Camera(player);
 
-        renderer = new MasterRenderer();
+        renderer = new MasterRenderer(loader);
     }
 
     public void start() {

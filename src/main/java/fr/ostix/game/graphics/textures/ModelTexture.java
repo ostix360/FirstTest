@@ -11,6 +11,7 @@ public class ModelTexture {
 
     private boolean isTransparency = false;
     private boolean useFakeLighting = false;
+    private boolean isInverseNormal = false;
 
     public ModelTexture(Texture texture) {
         this.textureID = texture.getId();
@@ -22,6 +23,15 @@ public class ModelTexture {
 
     public ModelTexture setUseFakeLighting(boolean useFakeLighting) {
         this.useFakeLighting = useFakeLighting;
+        return this;
+    }
+
+    public boolean isInverseNormal() {
+        return isInverseNormal;
+    }
+
+    public ModelTexture setInverseNormal(boolean value) {
+        this.isInverseNormal = value;
         return this;
     }
 

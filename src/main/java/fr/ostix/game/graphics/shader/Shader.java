@@ -26,6 +26,7 @@ public class Shader extends ShaderProgram {
     private int location_skyColour;
     private int location_numberOfRows;
     private int location_offset;
+    private int location_inverseNormal;
 
 
     public Shader() {
@@ -50,6 +51,7 @@ public class Shader extends ShaderProgram {
         location_skyColour = super.getUniformLocation("skyColour");
         location_numberOfRows = super.getUniformLocation("numberOfRows");
         location_offset = super.getUniformLocation("offset");
+        location_inverseNormal = super.getUniformLocation("inverseNormal");
 
         location_lightPosition = new int[MAX_LIGHTS];
         location_lightColour = new int[MAX_LIGHTS];
@@ -59,6 +61,10 @@ public class Shader extends ShaderProgram {
             location_lightColour[i] = super.getUniformLocation("lightColour[" + i + "]");
             location_lightAttenuation[i] = super.getUniformLocation("attenuation[" + i + "]");
         }
+    }
+
+    public void loadInverseNormal(boolean value) {
+        super.loadBooleanToUniform(location_inverseNormal, value);
     }
 
     public void loadOffset(float x, float y) {

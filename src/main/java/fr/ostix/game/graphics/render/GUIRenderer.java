@@ -21,7 +21,7 @@ public class GUIRenderer {
 
     public GUIRenderer(Loader loader) {
         float[] positions = {-1, 1, -1, -1, 1, 1, 1, -1};
-        quadModel = loader.loadToVAO(positions);
+        quadModel = loader.loadToVAO(positions, 2);
         shader = new GUIShader();
     }
 
