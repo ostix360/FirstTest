@@ -93,7 +93,7 @@ public class Game {
             float x = r.nextFloat() * 1600 - 800;
             float z = r.nextFloat() * 1600 - 800;
             entities.add(new Entity(treeModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
-                    0, 0, 0, 0.2f));
+                    0, 0, 0, 1.2f));
             x = r.nextFloat() * 1600 - 800;
             z = r.nextFloat() * 1600 - 800;
             entities.add(new Entity(grassModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),

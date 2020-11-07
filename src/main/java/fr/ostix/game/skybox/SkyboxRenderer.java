@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class SkyboxRenderer {
 
-    private static final float SIZE = 500f;
+    private static final float SIZE = 650f;
 
     private static final float[] VERTICES = {
             -SIZE, SIZE, -SIZE,

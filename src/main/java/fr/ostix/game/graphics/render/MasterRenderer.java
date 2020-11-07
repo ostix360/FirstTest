@@ -50,7 +50,7 @@ public class MasterRenderer {
     }
 
     public void render(List<Light> ligths, Camera cam) {
-        this.initFrame(Color.GRAY);
+        this.initFrame(new Color(0.5444f, 0.62f, 0.69f));
         shader.bind();
         shader.loadSkyColour(skyColor);
         shader.loadLights(ligths);

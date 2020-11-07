@@ -20,8 +20,8 @@ uniform float inverseNormal;
 uniform float numberOfRows;
 uniform vec2 offset;
 
-const float density = 0.001;
-const float gradient = 0.5;
+const float density = 0.00245;
+const float gradient = 2.85;
 
 void main() {
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
