@@ -30,26 +30,37 @@ public class Terrain {
     private final TerrainTexture blendMap;
 
     public Terrain(float gridX, float gridZ, Loader loader, TerrainTexturePack texturePack, TerrainTexture blendMap,
-                                                                                            String heightMap) {
-        this.x = gridX *SIZE;
+                   String heightMap) {
+        this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.model = generateTerrain(loader,heightMap);
+        this.model = generateTerrain(loader, heightMap);
         this.texturePack = texturePack;
         this.blendMap = blendMap;
     }
 
-    public float getHeightOfTerrain(float terrainX,float terrainZ,float gridSquareSize,int gridX,int gridZ) {
-        float xCoord = (terrainX % gridSquareSize)/gridSquareSize;
-        float zCoord = (terrainZ % gridSquareSize)/gridSquareSize;
+    public float getHeightOfTerrain(float worldX, float worldZ) {
+        float terrainX = worldX - this.x;
+        float terrainZ = worldZ - this.z;
+        float gridSquareSize = SIZE / ((float) heights.length - 1);  // cacul de la grille donc nombre de vertex - 1
+        int gridX = (int) Math.floor(terrainX / gridSquareSize);
+        int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
+        //System.out.println(gridX + " gridX || " + gridZ + " gridZ" );
+        if (gridX < 0 || gridX >= heights.length - 1 || gridZ < 0 || gridZ >= heights.length - 1) {
+            System.out.println("??");
+
+            return 0;
+        }
+        float xCoord = (terrainX % gridSquareSize) / gridSquareSize;
+        float zCoord = (terrainZ % gridSquareSize) / gridSquareSize;
         float answer;
-        if (xCoord <= (1-zCoord)) {
+        if (xCoord <= (1 - zCoord)) {
             answer = Maths.barryCentric(new Vector3f(0, heights[gridX][gridZ], 0), new Vector3f(1,
-                            heights[gridX + 1][gridZ], 0), new Vector3f(0,
-                            heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
+                    heights[gridX + 1][gridZ], 0), new Vector3f(0,
+                    heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
         } else {
             answer = Maths.barryCentric(new Vector3f(1, heights[gridX + 1][gridZ], 0), new Vector3f(1,
-                            heights[gridX + 1][gridZ + 1], 1), new Vector3f(0,
-                            heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
+                    heights[gridX + 1][gridZ + 1], 1), new Vector3f(0,
+                    heights[gridX][gridZ + 1], 1), new Vector2f(xCoord, zCoord));
         }
         return answer;
     }

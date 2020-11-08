@@ -4,7 +4,7 @@ import fr.ostix.game.graphics.Color;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Light {
-    private final Vector3f position;
+    private Vector3f position;
     private final Color colour;
     private Vector3f attenuation = new Vector3f(1, 0, 0);
 
@@ -18,6 +18,10 @@ public class Light {
         this.position = position;
         this.colour = colour;
         this.attenuation = attenuation;
+    }
+
+    public void setPosition(Vector3f position) {
+        this.position = position;
     }
 
     public Vector3f getAttenuation() {

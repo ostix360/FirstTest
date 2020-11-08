@@ -2,7 +2,7 @@ package fr.ostix.game.entities;
 
 import fr.ostix.game.core.Input;
 import fr.ostix.game.graphics.model.TextureModel;
-import fr.ostix.game.world.MasterTerrain;
+import fr.ostix.game.world.Terrain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.vector.Vector3f;
@@ -32,16 +32,16 @@ public class Player extends Entity {
     }
 
 
-    public void move(MasterTerrain terrain) {
+    public void move(Terrain[][] terrains) {
         checkInputs();
         super.increaseRotation(0, this.currentTurnSpeed * 0.0023f, 0);
         float distance = currentSpeed * 0.006f;
         float dx = (float) (distance * Math.sin(Math.toRadians(super.getRoty())));
         float dz = (float) (distance * Math.cos(Math.toRadians(super.getRoty())));
         super.increasePosition(dx, 0, dz);
-        upwardsSpeed += GRAVITY ;
+        upwardsSpeed += GRAVITY;
         super.increasePosition(0, upwardsSpeed * 0.01f, 0);
-        float terrainHeight = terrain.getTerrainHeight(super.getPosition().x,super.getPosition().z);
+        float terrainHeight = getTerrain(terrains, super.getPosition().x, super.getPosition().z).getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
         if (getPosition().y < terrainHeight) {
             upwardsSpeed = 0;
             this.isInAir = false;
@@ -80,6 +80,12 @@ public class Player extends Entity {
 
     public int getHealth() {
         return health;
+    }
+
+    private Terrain getTerrain(Terrain[][] terrains, float worldX, float worldZ) {
+        int x = (int) (worldX / Terrain.getSIZE());
+        int z = (int) (worldZ / Terrain.getSIZE());
+        return terrains[x][z];
     }
 
     public int getSprintTime() {

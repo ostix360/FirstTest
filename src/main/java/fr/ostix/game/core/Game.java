@@ -14,7 +14,6 @@ import fr.ostix.game.graphics.render.MasterRenderer;
 import fr.ostix.game.graphics.textures.ModelTexture;
 import fr.ostix.game.gui.GUIGame;
 import fr.ostix.game.gui.GUITexture;
-import fr.ostix.game.world.MasterTerrain;
 import fr.ostix.game.world.Terrain;
 import fr.ostix.game.world.texture.TerrainTexture;
 import fr.ostix.game.world.texture.TerrainTexturePack;
@@ -45,9 +44,13 @@ public class Game {
     private Camera cam;
     private MasterRenderer renderer;
     private Player player;
-    private MasterTerrain world;
+    private Terrain[][] world;
     private GUIRenderer guiRender;
     private GUIGame guiGame;
+    private MousePicker picker;
+    //      TEMP
+    private Entity lamp;
+    private Light light;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -72,43 +75,42 @@ public class Game {
         TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lamp", loader),
                 new ModelTexture(loader.loadTexture("lamp")).setInverseNormal(true));
 
-        Terrain terrain1 = new Terrain(-1f, -1f, loader, texturePack, blendMap, "heightmap");
-        Terrain terrain2 = new Terrain(0f, -1f, loader, texturePack, blendMap, "heightmap");
-        Terrain terrain3 = new Terrain(0f, 0f, loader, texturePack, blendMap, "heightmap");
-        Terrain terrain4 = new Terrain(-1f, 0f, loader, texturePack, blendMap, "heightmap");
+        Terrain terrain1 = new Terrain(0f, 0f, loader, texturePack, blendMap, "heightmap");
+        Terrain terrain2 = new Terrain(1f, 0f, loader, texturePack, blendMap, "heightmap");
+        Terrain terrain3 = new Terrain(0f, 1f, loader, texturePack, blendMap, "heightmap");
+        Terrain terrain4 = new Terrain(1f, 1f, loader, texturePack, blendMap, "heightmap");
 
 
-        List<Terrain> world = new ArrayList<>();
-        world.add(terrain1);
-        world.add(terrain2);
-        world.add(terrain3);
-        world.add(terrain4);
+        world = new Terrain[2][2];
+        world[0][0] = terrain1;
+        world[1][0] = terrain2;
+        world[0][1] = terrain3;
+        world[1][1] = terrain4;
 
-
-        this.world = new MasterTerrain(world);
 
         entities = new ArrayList<>();
         Random r = new Random();
         for (int i = 0; i < 500; i++) {
-            float x = r.nextFloat() * 1600 - 800;
-            float z = r.nextFloat() * 1600 - 800;
-            entities.add(new Entity(treeModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
+            float x = r.nextFloat() * 1600;
+            float z = r.nextFloat() * 1600;
+            entities.add(new Entity(treeModel, new Vector3f(x, getTerrain(world, x, z).getHeightOfTerrain(x, z), z),
                     0, 0, 0, 1.2f));
-            x = r.nextFloat() * 1600 - 800;
-            z = r.nextFloat() * 1600 - 800;
-            entities.add(new Entity(grassModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
+            x = r.nextFloat() * 1600;
+            z = r.nextFloat() * 1600;
+            entities.add(new Entity(grassModel, new Vector3f(x, getTerrain(world, x, z).getHeightOfTerrain(x, z), z),
                     0, 0, 0, 0.6f));
-            x = r.nextFloat() * 1600 - 800;
-            z = r.nextFloat() * 1600 - 800;
-            entities.add(new Entity(fernModel, new Vector3f(x, this.world.getTerrainHeight(x, z), z),
+            x = r.nextFloat() * 1600;
+            z = r.nextFloat() * 1600;
+            entities.add(new Entity(fernModel, new Vector3f(x, getTerrain(world, x, z).getHeightOfTerrain(x, z), z),
                     0, 0, 0, 0.3f));
         }
 
-        entities.add(new Entity(lamp, new Vector3f(100, this.world.getTerrainHeight(100, 0), 0), 0, 0, 0, 1));
-        entities.add(new Entity(lamp, new Vector3f(370, this.world.getTerrainHeight(370, -200), -200), 0, 0, 0, 1));
+        this.lamp = new Entity(lamp, new Vector3f(100, getTerrain(world, 100, 0).getHeightOfTerrain(100, 0), 0), 0, 0, 0, 1);
+        entities.add(this.lamp);
+        entities.add(new Entity(lamp, new Vector3f(370, getTerrain(world, 370, 200).getHeightOfTerrain(370, 200), 200), 0, 0, 0, 1));
 
-        Light light = new Light(new Vector3f(100, this.world.getTerrainHeight(100, 0) + 11f, 0), new Color(1.5f, 0, 0), new Vector3f(0.9f, 0.01f, 0.002f));
-        Light light2 = new Light(new Vector3f(370, this.world.getTerrainHeight(370, -200), -200), Color.CYAN);
+        light = new Light(new Vector3f(100, getTerrain(world, 100, 0).getHeightOfTerrain(100, 0) + 11f, 0), new Color(1.5f, 0, 0), new Vector3f(0.9f, 0.01f, 0.002f));
+        Light light2 = new Light(new Vector3f(370, getTerrain(world, 370, 200).getHeightOfTerrain(100, 200), 200), Color.CYAN);
 
         List<GUITexture> guis = new ArrayList<>();
         GUITexture gui1 = new GUITexture(new ModelTexture(loader.loadTexture("gui/socuwan")), new Vector2f(0.9f, 0.9f), new Vector2f(0.1f, 0.1f));
@@ -119,7 +121,7 @@ public class Game {
         GUITexture guiHealth = new GUITexture(new ModelTexture(loader.loadTexture("gui/health")), new Vector2f(-0.5f, -0.5f), new Vector2f(0.25f, 0.25f));
 
 
-        player = new Player(playerModel, new Vector3f(100, 0, -100), 0, 0, 0, 1);
+        player = new Player(playerModel, new Vector3f(800, 0, 800), 0, 0, 0, 1);
 
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
 
@@ -131,6 +133,8 @@ public class Game {
         cam = new Camera(player);
 
         renderer = new MasterRenderer(loader);
+
+        picker = new MousePicker(renderer.getProjectionMatrix(), cam, world);
     }
 
     public void start() {
@@ -207,16 +211,24 @@ public class Game {
 
     private void update() {
         Input.updateInput(glfwGetCurrentContext());
-        cam.move(world.getTerrainHeight(cam.getPosition().x, cam.getPosition().z));
+        cam.move(world);
         player.move(world);
+        picker.update();
+        Vector3f terraintPoint = picker.getCurrentTerrainPoint();
+        if (terraintPoint != null) {
+            this.lamp.setPosition(terraintPoint);
+            this.light.setPosition(new Vector3f(terraintPoint.x, terraintPoint.y + 12.5f, terraintPoint.z));
+        }
         guiGame.update();
         glfwPollEvents();
     }
 
     private void render() {
         renderer.processEntity(player);
-        for (Terrain t : this.world.getTerrains()) {
-            renderer.processTerrain(t);
+        for (Terrain[] t : world) {
+            for (Terrain tn : t) {
+                renderer.processTerrain(tn);
+            }
         }
         for (Entity e : entities) {
             renderer.processEntity(e);
@@ -224,6 +236,14 @@ public class Game {
         renderer.render(lights, cam);
 
         guiGame.render();
+    }
+
+
+    private Terrain getTerrain(Terrain[][] terrains, float worldX, float worldZ) {
+        int x = (int) (worldX / Terrain.getSIZE());
+        int z = (int) (worldZ / Terrain.getSIZE());
+
+        return terrains[x][z];
     }
 
 

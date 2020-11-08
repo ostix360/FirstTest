@@ -1,6 +1,7 @@
 package fr.ostix.game.entities;
 
 import fr.ostix.game.core.Input;
+import fr.ostix.game.world.Terrain;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.vector.Vector3f;
@@ -29,8 +30,8 @@ public class Camera {
 
     private float getTerrainheight;
 
-    public void move(float getTerrainheight) {
-        this.getTerrainheight = getTerrainheight + 3;
+    public void move(Terrain[][] terrains) {
+        this.getTerrainheight = getTerrain(terrains, position.x, position.z).getHeightOfTerrain(position.x, position.z) + 3;
         caculateZoom();
         calculateAngleAroundPlayerAndPitch();
         float horizontalDistance = calculateHorizontalDistance();
@@ -79,12 +80,18 @@ public class Camera {
             if (pitch >= 90) {
                 pitch = 90;
             }
-            if (pitch <= -4){
+            if (pitch <= -4) {
                 if (elapsedMouseDY < pitchChange) distanceFromPlayer += pitchChange * 1.4;
                 pitch = -4;
             }
             elapsedMouseDY = pitchChange;
         }
+    }
+
+    private Terrain getTerrain(Terrain[][] terrains, float worldX, float worldZ) {
+        int x = (int) (worldX / Terrain.getSIZE());
+        int z = (int) (worldZ / Terrain.getSIZE());
+        return terrains[x][z];
     }
 
     public Vector3f getPosition() {

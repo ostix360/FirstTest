@@ -10,28 +10,30 @@ import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Input{
+public class Input {
 
-    public static boolean[] keys =new boolean[65535];
+    private static final DoubleBuffer MOUSE_X = BufferUtils.createDoubleBuffer(1);
     public static boolean[] keysMouse = new boolean[65535];
-
-    public static DoubleBuffer b1 = BufferUtils.createDoubleBuffer(1);
-    public static DoubleBuffer b2 = BufferUtils.createDoubleBuffer(1);
-
+    private static final DoubleBuffer MOUSE_Y = BufferUtils.createDoubleBuffer(1);
+    public static boolean[] keys = new boolean[65535];
+    private static double mouseX;
+    private static double mouseY;
     public static float mouseDY;
     public static float mouseDX;
     public static float mouseDWhell;
     private static float beforePositionX;
     private static float beforePositionY;
 
-    public static void updateInput(long window){
+    public static void updateInput(long window) {
         mouseDY = 0;
         mouseDX = 0;
         //mouseDWhell = 0;
 
-        glfwGetCursorPos(window, b1, b2);
-        mouseDX = (float) b1.get() - beforePositionX;
-        mouseDY = (float) b2.get() - beforePositionY;
+        glfwGetCursorPos(window, MOUSE_X, MOUSE_Y);
+        mouseX = MOUSE_X.get();
+        mouseY = MOUSE_Y.get();
+        mouseDX = (float) mouseX - beforePositionX;
+        mouseDY = (float) mouseY - beforePositionY;
 
 
         GLFW.glfwSetKeyCallback(window, new GLFWKeyCallback() {
@@ -48,20 +50,25 @@ public class Input{
             }
         });
 
-        glfwSetScrollCallback(window,(w, xoffset, yoffset) ->{
-            mouseDWhell = (float) (yoffset - xoffset);
-        });
+        glfwSetScrollCallback(window, (w, xoffset, yoffset) -> mouseDWhell = (float) (yoffset - xoffset));
 
-        b1.flip();
-        b2.flip();
+        MOUSE_X.flip();
+        MOUSE_Y.flip();
 
-        beforePositionX = (float) b1.get();
-        beforePositionY = (float) b2.get();
+        beforePositionX = (float) MOUSE_X.get();
+        beforePositionY = (float) MOUSE_Y.get();
 
-        b1.flip();
-        b2.flip();
+        MOUSE_X.flip();
+        MOUSE_Y.flip();
     }
 
+    public static double getMouseX() {
+        return mouseX;
+    }
+
+    public static double getMouseY() {
+        return mouseY;
+    }
 
     public static float getMouseDWhell() {
         float value = mouseDWhell;
