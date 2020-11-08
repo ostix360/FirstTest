@@ -163,7 +163,7 @@ public class Game {
         double elapsed;
         double elapsedRender;
         double nanoSeconds = 1000000000.0 / 60;
-        double renderTime = 1000000000.0 / 30;
+        double renderTime = 1000000000.0 / 60;
 
         int ticks = 0;
         int frames = 0;
