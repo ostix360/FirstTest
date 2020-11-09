@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -85,7 +86,8 @@ public class DisplayManager {
         float currentFrameTime = getCurrentTime();
         delta = (currentFrameTime -lastFrameTime)*1000;
         lastFrameTime = getCurrentTime();
-        GL11.glViewport(0,0, width, height);
+        GL11.glViewport(0, 0, width, height);
+        GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
         glfwSwapBuffers(window);
     }
 

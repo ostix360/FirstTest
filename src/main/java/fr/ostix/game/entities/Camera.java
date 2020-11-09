@@ -88,6 +88,10 @@ public class Camera {
         }
     }
 
+    public void invertPitch() {
+        this.pitch = -pitch;
+    }
+
     private Terrain getTerrain(Terrain[][] terrains, float worldX, float worldZ) {
         int x = (int) (worldX / Terrain.getSIZE());
         int z = (int) (worldZ / Terrain.getSIZE());
@@ -109,4 +113,6 @@ public class Camera {
     public float getRoll() {
         return roll;
     }
+
+
 }

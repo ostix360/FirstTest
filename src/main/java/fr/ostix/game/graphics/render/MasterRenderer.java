@@ -12,6 +12,7 @@ import fr.ostix.game.graphics.shader.TerrainShader;
 import fr.ostix.game.skybox.SkyboxRenderer;
 import fr.ostix.game.world.Terrain;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,15 +50,29 @@ public class MasterRenderer {
         skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
     }
 
-    public void render(List<Light> ligths, Camera cam) {
+    public void renderScene(List<Entity> entities, Terrain[][] terrains, List<Light> lights, Camera camera, Vector4f clipPlane) {
+        for (Terrain[] t : terrains) {
+            for (Terrain tn : t) {
+                processTerrain(tn);
+            }
+        }
+        for (Entity entity : entities) {
+            processEntity(entity);
+        }
+        render(lights, camera, clipPlane);
+    }
+
+    public void render(List<Light> ligths, Camera cam, Vector4f clipPlane) {
         this.initFrame(new Color(0.5444f, 0.62f, 0.69f));
         shader.bind();
+        shader.loadClipPlane(clipPlane);
         shader.loadSkyColour(skyColor);
         shader.loadLights(ligths);
         shader.loadViewMatrix(cam);
         entityRenderer.render(entities);
         shader.unBind();
         terrainShader.bind();
+        terrainShader.loadClipPlane(clipPlane);
         terrainShader.loadSkyColour(skyColor);
         terrainShader.loadLights(ligths);
         terrainShader.loadViewMatrix(cam);
@@ -100,7 +115,7 @@ public class MasterRenderer {
         projectionMatrix.m33 = 0;
     }
 
-    public void processEntity(Entity e) {
+    private void processEntity(Entity e) {
         TextureModel model = e.getModel();
         List<Entity> batch = entities.get(model);
         if (batch != null) {
@@ -112,7 +127,7 @@ public class MasterRenderer {
         }
     }
 
-    public void processTerrain(Terrain t) {
+    private void processTerrain(Terrain t) {
         terrains.add(t);
     }
 

@@ -4,19 +4,28 @@ import fr.ostix.game.graphics.textures.ModelTexture;
 import org.lwjgl.util.vector.Vector2f;
 
 public class GUITexture {
-    private final ModelTexture texture;
+    private final int textureID;
     private Vector2f position;
     private Vector2f scale;
     private int textureIndex;
+    private ModelTexture texture;
 
     public GUITexture(ModelTexture texture, Vector2f position, Vector2f scale) {
         this.texture = texture;
+        this.textureID = texture.geID();
+        this.position = position;
+        this.scale = scale;
+    }
+
+    public GUITexture(int texture, Vector2f position, Vector2f scale) {
+        this.textureID = texture;
         this.position = position;
         this.scale = scale;
     }
 
     public GUITexture(ModelTexture texture, int textureIndex, Vector2f position, Vector2f scale) {
         this.texture = texture;
+        this.textureID = texture.geID();
         this.position = position;
         this.scale = scale;
         this.textureIndex = textureIndex;
@@ -33,7 +42,7 @@ public class GUITexture {
     }
 
     public int getTextureID() {
-        return texture.geID();
+        return textureID;
     }
 
     public ModelTexture getTexture() {

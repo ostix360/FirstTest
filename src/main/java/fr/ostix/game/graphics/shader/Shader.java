@@ -7,6 +7,7 @@ import fr.ostix.game.math.Maths;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class Shader extends ShaderProgram {
     private int location_numberOfRows;
     private int location_offset;
     private int location_inverseNormal;
+    private int location_plane;
 
 
     public Shader() {
@@ -52,6 +54,7 @@ public class Shader extends ShaderProgram {
         location_numberOfRows = super.getUniformLocation("numberOfRows");
         location_offset = super.getUniformLocation("offset");
         location_inverseNormal = super.getUniformLocation("inverseNormal");
+        location_plane = super.getUniformLocation("plane");
 
         location_lightPosition = new int[MAX_LIGHTS];
         location_lightColour = new int[MAX_LIGHTS];
@@ -61,6 +64,10 @@ public class Shader extends ShaderProgram {
             location_lightColour[i] = super.getUniformLocation("lightColour[" + i + "]");
             location_lightAttenuation[i] = super.getUniformLocation("attenuation[" + i + "]");
         }
+    }
+
+    public void loadClipPlane(Vector4f value) {
+        super.loadVerctor4fToUniform(location_plane, value);
     }
 
     public void loadInverseNormal(boolean value) {

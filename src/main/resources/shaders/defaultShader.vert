@@ -20,11 +20,17 @@ uniform float inverseNormal;
 uniform float numberOfRows;
 uniform vec2 offset;
 
+uniform vec4 plane;
+
 const float density = 0.00245;
 const float gradient = 2.85;
 
+
 void main() {
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+
+    gl_ClipDistance[0] = dot(worldPosition, plane);
+
     vec4 relativePositionToCamera =  viewMatrix * worldPosition;
     gl_Position = projectionMatrix * relativePositionToCamera;
     pass_textureCoords = (textureCoords/numberOfRows)+offset;

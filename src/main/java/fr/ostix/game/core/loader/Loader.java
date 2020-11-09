@@ -160,7 +160,7 @@ public class Loader {
         GL30.glBindVertexArray(0);      //Desactivation du VAO actife
     }
 
-    public void cleanUP() {
+    public void cleanUp() {
         for (int i : vaos) {
             GL30.glDeleteVertexArrays(i);
         }

@@ -6,9 +6,12 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.FloatBuffer;
 
@@ -23,7 +26,7 @@ public abstract class ShaderProgram {
     private final int vertexShaderID;
     private final int fragmentShaderID;
 
-    private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+    private static final FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 
     public ShaderProgram(String vertexShader, String fragmentShader) {
         this.vertexShaderID = loadShader(vertexShader, GL_VERTEX_SHADER);
@@ -67,23 +70,29 @@ public abstract class ShaderProgram {
     protected void loadFloatToUniform(int location,float value){
         glUniform1f(location,value);
     }
-    protected void loadVerctor2fToUniform(int location, Vector2f vector){
-        glUniform2f(location,vector.x,vector.y);
+
+    protected void loadVerctor2fToUniform(int location, Vector2f vector) {
+        glUniform2f(location, vector.x, vector.y);
     }
 
-    protected void loadVerctor3fToUniform(int location, Vector3f vector){
-        glUniform3f(location,vector.x,vector.y,vector.z);
+    protected void loadVerctor3fToUniform(int location, Vector3f vector) {
+        glUniform3f(location, vector.x, vector.y, vector.z);
     }
 
-    protected void loadBooleanToUniform(int location,boolean value){
+    protected void loadVerctor4fToUniform(int location, Vector4f vector) {
+        glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+    }
+
+
+    protected void loadBooleanToUniform(int location, boolean value) {
         float fValue = 0;
-        if (value){
+        if (value) {
             fValue = 1;
         }
-        glUniform1f(location,fValue);
+        glUniform1f(location, fValue);
     }
 
-    protected void loadMatrixToUniform(int location, Matrix4f matrix){
+    protected void loadMatrixToUniform(int location, Matrix4f matrix) {
         matrix.store(matrixBuffer);
         matrixBuffer.flip();
         glUniformMatrix4fv(location,false,matrixBuffer);

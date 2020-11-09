@@ -44,10 +44,7 @@ public class Terrain {
         float gridSquareSize = SIZE / ((float) heights.length - 1);  // cacul de la grille donc nombre de vertex - 1
         int gridX = (int) Math.floor(terrainX / gridSquareSize);
         int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
-        //System.out.println(gridX + " gridX || " + gridZ + " gridZ" );
         if (gridX < 0 || gridX >= heights.length - 1 || gridZ < 0 || gridZ >= heights.length - 1) {
-            System.out.println("??");
-
             return 0;
         }
         float xCoord = (terrainX % gridSquareSize) / gridSquareSize;

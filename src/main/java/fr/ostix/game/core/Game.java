@@ -11,16 +11,23 @@ import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.render.GUIRenderer;
 import fr.ostix.game.graphics.render.MasterRenderer;
+import fr.ostix.game.graphics.render.WaterRenderer;
+import fr.ostix.game.graphics.shader.WaterShader;
 import fr.ostix.game.graphics.textures.ModelTexture;
 import fr.ostix.game.gui.GUIGame;
 import fr.ostix.game.gui.GUITexture;
 import fr.ostix.game.world.Terrain;
 import fr.ostix.game.world.texture.TerrainTexture;
 import fr.ostix.game.world.texture.TerrainTexturePack;
+import fr.ostix.game.world.water.WaterFrameBuffers;
+import fr.ostix.game.world.water.WaterTile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +58,11 @@ public class Game {
     //      TEMP
     private Entity lamp;
     private Light light;
+
+    //*********WATER*******
+    private WaterRenderer waterRenderer;
+    private List<WaterTile> waters;
+    private WaterFrameBuffers waterFBOS;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -121,7 +133,8 @@ public class Game {
         GUITexture guiHealth = new GUITexture(new ModelTexture(loader.loadTexture("gui/health")), new Vector2f(-0.5f, -0.5f), new Vector2f(0.25f, 0.25f));
 
 
-        player = new Player(playerModel, new Vector3f(800, 0, 800), 0, 0, 0, 1);
+        player = new Player(playerModel, new Vector3f(10, 0, 10), 0, 0, 0, 1);
+        entities.add(player);
 
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
 
@@ -135,6 +148,14 @@ public class Game {
         renderer = new MasterRenderer(loader);
 
         picker = new MousePicker(renderer.getProjectionMatrix(), cam, world);
+
+
+        //*************WATER************
+        waters = new ArrayList<>();
+        waters.add(new WaterTile(100, 100, 0));
+        waterFBOS = new WaterFrameBuffers();
+        WaterShader waterShader = new WaterShader();
+        this.waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), waterFBOS);
     }
 
     public void start() {
@@ -150,9 +171,11 @@ public class Game {
     }
 
     public void exit() {
-        guiRender.cleanUP();
+        waterFBOS.cleanUp();
+        waterRenderer.cleanUp();
+        guiRender.cleanUp();
         renderer.cleanUp();
-        loader.cleanUP();
+        loader.cleanUp();
         DisplayManager.closeDisplay();
         LOGGER.info("stop");
         System.exit(0);
@@ -167,7 +190,7 @@ public class Game {
         double elapsed;
         double elapsedRender;
         double nanoSeconds = 1000000000.0 / 60;
-        double renderTime = 1000000000.0 / 60;
+        double renderTime = 1000000000.0 / 30;
 
         int ticks = 0;
         int frames = 0;
@@ -224,17 +247,22 @@ public class Game {
     }
 
     private void render() {
-        renderer.processEntity(player);
-        for (Terrain[] t : world) {
-            for (Terrain tn : t) {
-                renderer.processTerrain(tn);
-            }
-        }
-        for (Entity e : entities) {
-            renderer.processEntity(e);
-        }
-        renderer.render(lights, cam);
+        waterFBOS.bindReflectionFrameBuffer();
+        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
+        cam.getPosition().y -= distance;
+        cam.invertPitch();
+        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight()));
+        cam.getPosition().y += distance;
+        cam.invertPitch();
 
+        waterFBOS.bindRefractionFrameBuffer();
+        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
+
+        GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+        waterFBOS.unbindCurrentFrameBuffer();
+
+        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
+        waterRenderer.render(waters, cam);
         guiGame.render();
     }
 
