@@ -1,5 +1,6 @@
 package fr.ostix.game.graphics.render;
 
+import fr.ostix.game.core.DisplayManager;
 import fr.ostix.game.core.loader.Loader;
 import fr.ostix.game.entities.Camera;
 import fr.ostix.game.graphics.model.MeshModel;
@@ -19,13 +20,20 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class WaterRenderer {
 
+    private static final String DUDV_MAP = "water/waterDUDV";
+    private static final float WAVE_SPEED = 0.6f;
+
     private final WaterShader shader;
     private final WaterFrameBuffers fbos;
     private MeshModel quad;
 
+    private final int dudvTexture;
+    private float waveMove = 0;
+
     public WaterRenderer(Loader loader, WaterShader shader, Matrix4f projectionMatrix, WaterFrameBuffers fbos) {
         this.fbos = fbos;
         this.shader = shader;
+        this.dudvTexture = loader.loadTexture(DUDV_MAP).getId();
         shader.bind();
         shader.connectTextureUnits();
         shader.loadProjectionMatrix(projectionMatrix);
@@ -48,12 +56,17 @@ public class WaterRenderer {
     private void prepareRender(Camera camera) {
         shader.bind();
         shader.loadViewMatrix(camera);
+        waveMove += WAVE_SPEED * DisplayManager.getFrameTimeSeconde();
+        waveMove %= 1;
+        shader.loadWaveFactor(waveMove);
         GL30.glBindVertexArray(quad.getVaoID());
         GL20.glEnableVertexAttribArray(0);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, fbos.getReflectionTexture());
         GL13.glActiveTexture(GL13.GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, fbos.getRefractionTexture());
+        GL13.glActiveTexture(GL13.GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, dudvTexture);
     }
 
     private void unbind() {
