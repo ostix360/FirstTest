@@ -17,6 +17,10 @@ public class ModelTexture {
         this.textureID = texture.getId();
     }
 
+    public ModelTexture(int texture) {
+        this.textureID = texture;
+    }
+
     public boolean useFakeLighting() {
         return useFakeLighting;
     }

@@ -3,6 +3,7 @@ package fr.ostix.game.graphics.render;
 import fr.ostix.game.core.DisplayManager;
 import fr.ostix.game.core.loader.Loader;
 import fr.ostix.game.entities.Camera;
+import fr.ostix.game.entities.Light;
 import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.shader.WaterShader;
 import fr.ostix.game.math.Maths;
@@ -21,6 +22,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class WaterRenderer {
 
     private static final String DUDV_MAP = "water/waterDUDV";
+    private static final String NORMAL_MAP = "water/normalMap";
     private static final float WAVE_SPEED = 0.6f;
 
     private final WaterShader shader;
@@ -28,12 +30,14 @@ public class WaterRenderer {
     private MeshModel quad;
 
     private final int dudvTexture;
+    private final int normalTexture;
     private float waveMove = 0;
 
     public WaterRenderer(Loader loader, WaterShader shader, Matrix4f projectionMatrix, WaterFrameBuffers fbos) {
         this.fbos = fbos;
         this.shader = shader;
         this.dudvTexture = loader.loadTexture(DUDV_MAP).getId();
+        this.normalTexture = loader.loadTexture(NORMAL_MAP).getId();
         shader.bind();
         shader.connectTextureUnits();
         shader.loadProjectionMatrix(projectionMatrix);
@@ -41,8 +45,8 @@ public class WaterRenderer {
         setUpVAO(loader);
     }
 
-    public void render(List<WaterTile> water, Camera camera) {
-        prepareRender(camera);
+    public void render(List<WaterTile> water, Camera camera, Light sun) {
+        prepareRender(camera, sun);
         for (WaterTile tile : water) {
             Matrix4f modelMatrix = Maths.createTransformationMatrix(
                     new Vector3f(tile.getX(), tile.getHeight(), tile.getZ()), 0, 0, 0,
@@ -53,12 +57,13 @@ public class WaterRenderer {
         unbind();
     }
 
-    private void prepareRender(Camera camera) {
+    private void prepareRender(Camera camera, Light sun) {
         shader.bind();
         shader.loadViewMatrix(camera);
         waveMove += WAVE_SPEED * DisplayManager.getFrameTimeSeconde();
         waveMove %= 1;
         shader.loadWaveFactor(waveMove);
+        shader.loadLight(sun);
         GL30.glBindVertexArray(quad.getVaoID());
         GL20.glEnableVertexAttribArray(0);
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -67,9 +72,16 @@ public class WaterRenderer {
         glBindTexture(GL_TEXTURE_2D, fbos.getRefractionTexture());
         GL13.glActiveTexture(GL13.GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, dudvTexture);
+        GL13.glActiveTexture(GL13.GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, normalTexture);
+        GL13.glActiveTexture(GL13.GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, fbos.getRefractionDepthTexture());
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private void unbind() {
+        glDisable(GL_BLEND);
         glBindTexture(GL_TEXTURE_2D, 0);
         GL20.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);

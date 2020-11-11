@@ -10,10 +10,13 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL11.*;
 
 public class WaterFrameBuffers {
-    protected static final int REFLECTION_WIDTH = 1920;
-    protected static final int REFRACTION_WIDTH = 864;
-    private static final int REFLECTION_HEIGHT = 1080;
-    private static final int REFRACTION_HEIGHT = 486;
+
+
+    protected static final int REFLECTION_WIDTH = 320;
+    protected static final int REFRACTION_WIDTH = 1280;
+    private static final int REFLECTION_HEIGHT = 180;
+    private static final int REFRACTION_HEIGHT = 720;
+
 
     private int reflectionFrameBuffer;
     private int reflectionTexture;

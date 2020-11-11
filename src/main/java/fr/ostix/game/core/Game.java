@@ -55,6 +55,7 @@ public class Game {
     private GUIRenderer guiRender;
     private GUIGame guiGame;
     private MousePicker picker;
+    private Light sun;
     //      TEMP
     private Entity lamp;
     private Light light;
@@ -63,6 +64,7 @@ public class Game {
     private WaterRenderer waterRenderer;
     private List<WaterTile> waters;
     private WaterFrameBuffers waterFBOS;
+    private GUITexture waterDepth;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -121,7 +123,7 @@ public class Game {
         entities.add(this.lamp);
         entities.add(new Entity(lamp, new Vector3f(370, getTerrain(world, 370, 200).getHeightOfTerrain(370, 200), 200), 0, 0, 0, 1));
 
-        light = new Light(new Vector3f(100, getTerrain(world, 100, 0).getHeightOfTerrain(100, 0) + 11f, 0), new Color(1.5f, 0, 0), new Vector3f(0.9f, 0.01f, 0.002f));
+        light = new Light(new Vector3f(100, getTerrain(world, 0, 0).getHeightOfTerrain(100, 0) + 11f, 0), new Color(1.5f, 0, 0), new Vector3f(0.9f, 0.01f, 0.002f));
         Light light2 = new Light(new Vector3f(370, getTerrain(world, 370, 200).getHeightOfTerrain(100, 200), 200), Color.CYAN);
 
         List<GUITexture> guis = new ArrayList<>();
@@ -138,9 +140,9 @@ public class Game {
 
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
 
-
+        sun = new Light(new Vector3f(0, 10, 0), Color.SUN);
         lights.add(light);
-        lights.add(new Light(new Vector3f(0, 1000, 600), Color.GRAY));
+        lights.add(sun);
         //lights.add(light2);
 
         cam = new Camera(player);
@@ -154,8 +156,13 @@ public class Game {
         waters = new ArrayList<>();
         waters.add(new WaterTile(100, 100, 0));
         waterFBOS = new WaterFrameBuffers();
+
+
         WaterShader waterShader = new WaterShader();
         this.waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), waterFBOS);
+        waterDepth = new GUITexture(new ModelTexture(waterFBOS.getRefractionDepthTexture()), new Vector2f(-0.75f, 0.75f), new Vector2f(0.25f, 0.25f));
+        guis.add(new GUITexture(new ModelTexture(waterFBOS.getRefractionTexture()), new Vector2f(0.75f, 0.75f), new Vector2f(0.25f, 0.25f)));
+        guis.add(waterDepth);
     }
 
     public void start() {
@@ -262,7 +269,7 @@ public class Game {
         waterFBOS.unbindCurrentFrameBuffer();
 
         renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
-        waterRenderer.render(waters, cam);
+        waterRenderer.render(waters, cam, sun);
         guiGame.render();
     }
 
