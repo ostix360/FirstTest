@@ -21,8 +21,8 @@ public class Color {
     public static final Color YELLOW = new Color(1, 1, 0);
     public static final Color CYAN = new Color(0, 1, 1);
     public static final Color MAGENTA = new Color(1, 0, 1);
-    public static final Color GRAY = new Color(0.5f,0.5f,0.5f);
-    public static final Color SUN = new Color(1,0.95f,0.95f);
+    public static final Color GRAY = new Color(0.5f, 0.5f, 0.5f);
+    public static final Color SUN = new Color(1.5f, 1.25f, 1.45f);
 
 
     private final float red;

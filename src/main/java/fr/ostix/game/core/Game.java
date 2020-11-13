@@ -6,6 +6,9 @@ import fr.ostix.game.entities.Camera;
 import fr.ostix.game.entities.Entity;
 import fr.ostix.game.entities.Light;
 import fr.ostix.game.entities.Player;
+import fr.ostix.game.font.meshCreator.FontType;
+import fr.ostix.game.font.meshCreator.GUIText;
+import fr.ostix.game.font.rendering.MasterFont;
 import fr.ostix.game.graphics.Color;
 import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.model.TextureModel;
@@ -160,9 +163,15 @@ public class Game {
 
         WaterShader waterShader = new WaterShader();
         this.waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), waterFBOS);
-        waterDepth = new GUITexture(new ModelTexture(waterFBOS.getRefractionDepthTexture()), new Vector2f(-0.75f, 0.75f), new Vector2f(0.25f, 0.25f));
-        guis.add(new GUITexture(new ModelTexture(waterFBOS.getRefractionTexture()), new Vector2f(0.75f, 0.75f), new Vector2f(0.25f, 0.25f)));
-        guis.add(waterDepth);
+        // waterDepth = new GUITexture(new ModelTexture(waterFBOS.getRefractionDepthTexture()), new Vector2f(-0.75f, 0.75f), new Vector2f(0.25f, 0.25f));
+        //guis.add(new GUITexture(new ModelTexture(waterFBOS.getRefractionTexture()), new Vector2f(0.75f, 0.75f), new Vector2f(0.25f, 0.25f)));
+        //guis.add(waterDepth);
+
+        //*********TEXT**********
+        MasterFont.init(loader);
+        FontType Liberty = new FontType(loader.loadTextureFont("Test001"), "Test001");
+        GUIText text1 = new GUIText("C'est un test", 2, Liberty, new Vector2f(0, 0.5f), 1f, true);
+        MasterFont.loadTexte(text1);
     }
 
     public void start() {
@@ -178,6 +187,7 @@ public class Game {
     }
 
     public void exit() {
+        MasterFont.cleanUp();
         waterFBOS.cleanUp();
         waterRenderer.cleanUp();
         guiRender.cleanUp();
@@ -258,7 +268,7 @@ public class Game {
         float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
         cam.getPosition().y -= distance;
         cam.invertPitch();
-        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight()));
+        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
         cam.getPosition().y += distance;
         cam.invertPitch();
 
@@ -270,6 +280,7 @@ public class Game {
 
         renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
         waterRenderer.render(waters, cam, sun);
+        MasterFont.render();
         guiGame.render();
     }
 

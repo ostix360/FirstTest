@@ -15,6 +15,8 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColour;
 
+const float levels = 5;
+
 void main() {
 
     vec3 unitNormal = normalize(surfaceNormal);
@@ -30,6 +32,8 @@ void main() {
 
         float nDotl = dot(unitNormal, unitLightVector);
         float brightness = max(nDotl, 0.0);
+        //float level = floor(brightness * levels);
+        //brightness = level/levels;
 
         vec3 lightDirection = -unitLightVector;
         vec3 reflectedLightDirection = reflect(lightDirection, unitNormal);
@@ -37,8 +41,10 @@ void main() {
         float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
         specularFactor = max(specularFactor, 0.0);
         float dampedFactor = pow(specularFactor, shineDamper);
+        //level = floor(dampedFactor * levels);
+        //dampedFactor = level/levels;
         totalDiffuse = totalDiffuse + (brightness * lightColour[i])/attenuationFactor;
-        totalSpeculare = totalSpeculare + (dampedFactor * lightColour[i] * reflectivity)/attenuationFactor;
+        totalSpeculare = totalSpeculare + max(vec3(0.), (dampedFactor * lightColour[i] * reflectivity))/attenuationFactor;
     }
 
     totalDiffuse = max(totalDiffuse, 0.1);

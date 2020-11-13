@@ -9,10 +9,8 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL11.GL_FALSE;
@@ -133,14 +131,14 @@ public abstract class ShaderProgram {
     private static StringBuilder readShader(String file) {
         StringBuilder sb = new StringBuilder();
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(new File(ShaderProgram.class.getResource("/shaders/" + file).toURI())));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ShaderProgram.class.getResourceAsStream("/shaders/" + file)));
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
                 sb.append("\n");
             }
             reader.close();
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             LOGGER.error("Could not read file ", e);
         }
         return sb;

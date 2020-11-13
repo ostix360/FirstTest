@@ -12,10 +12,8 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -63,6 +61,19 @@ public class Loader {
     }
 
     /**
+     * @param positions     Tableaux des positions des Arrets
+     * @param textureCoords Tableaux des coordonées de la texture par rapport au model
+     */
+    public int loadToVAO(float[] positions, float[] textureCoords) {
+        int vaoID = createVAO();            //creation d'une addresse memoir pour le VAO
+        storeDataInAttributeList(0, 2, positions);      //Integration des positions dans notre addresse memoir VAO avec comme index 0 et nombre de valeur par position 3
+        storeDataInAttributeList(1, 2, textureCoords);      //Integration des positions de la texture dans notre addresse memoir VAO avec comme index 1 et nombre de valeur par position 2
+        unbindVAO();
+        System.out.println(vaoID);
+        return vaoID;
+    }
+
+    /**
      * @param positions Tableaux des positions des Arrets
      */
     public MeshModel loadToVAO(float[] positions, int dimensions) {
@@ -77,9 +88,19 @@ public class Loader {
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -0.2f);
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -4);
         textures.add(texture.getId());
         return texture;
+    }
+
+    public int loadTextureFont(String textureFontName) {
+        Texture texture = Texture.loadTexture("/textures/font/" + textureFontName + ".png");
+        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST_MIPMAP_LINEAR);
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0);
+        textures.add(texture.getId());
+        return texture.getId();
     }
 
     public int loadCubMap(String[] fileNames) {
@@ -101,9 +122,9 @@ public class Loader {
         int width = 0;
         int height = 0;
         ByteBuffer buffer = null;
-        FileInputStream fis;
+        InputStream fis;
         try {
-            fis = new FileInputStream(new File(Loader.class.getResource("/textures/skybox/" + fileName + ".png").toURI()));
+            fis = Loader.class.getResourceAsStream("/textures/skybox/" + fileName + ".png");
             PNGDecoder decoder = new PNGDecoder(fis);
             width = decoder.getWidth();
             height = decoder.getHeight();
@@ -111,7 +132,7 @@ public class Loader {
             decoder.decode(buffer, width * 4, PNGDecoder.Format.RGBA);
             buffer.flip();
             fis.close();
-        } catch (URISyntaxException | IOException e) {
+        } catch (IOException e) {
             LOGGER.error("Tried to load " + fileName + " , didn't work", e);
             System.exit(-1);
         }

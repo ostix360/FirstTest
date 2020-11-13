@@ -1,26 +1,19 @@
 package fr.ostix.game.core.loader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.ostix.game.graphics.model.MeshModel;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 public class OBJFileLoader {
 	public static MeshModel loadModel(String objFileName, Loader loader) {
-		FileReader isr = null;
-		try {
-			isr = new FileReader(new File(OBJFileLoader.class.getResource( "/obj/"+ objFileName + ".obj").toURI()));
-		} catch (FileNotFoundException | URISyntaxException e) {
-			System.err.println("File not found in res; don't use any extention");
-		}
+		InputStreamReader isr = null;
+		isr = new InputStreamReader(OBJFileLoader.class.getResourceAsStream("/obj/" + objFileName + ".obj"));
 		BufferedReader reader = new BufferedReader(isr);
 		String line;
 		List<Vertex> vertices = new ArrayList<>();

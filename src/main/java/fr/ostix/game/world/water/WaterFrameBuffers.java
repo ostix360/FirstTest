@@ -12,9 +12,9 @@ import static org.lwjgl.opengl.GL11.*;
 public class WaterFrameBuffers {
 
 
-    protected static final int REFLECTION_WIDTH = 320;
+    protected static final int REFLECTION_WIDTH = 1280;
     protected static final int REFRACTION_WIDTH = 1280;
-    private static final int REFLECTION_HEIGHT = 180;
+    private static final int REFLECTION_HEIGHT = 720;
     private static final int REFRACTION_HEIGHT = 720;
 
 
@@ -76,12 +76,19 @@ public class WaterFrameBuffers {
     private int createDepthTextureAttachment(int width, int height) {
         int texture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL14.GL_DEPTH_COMPONENT32, width, height,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL30.GL_DEPTH_COMPONENT, width, height,
                 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT,
-                texture, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL14.GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL14.GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL14.GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexParameteri(GL_TEXTURE_2D, GL14.GL_TEXTURE_COMPARE_MODE, GL14.GL_COMPARE_R_TO_TEXTURE);
+//        GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT,
+//                texture, 0);
+        GL32.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT,
+                GL_TEXTURE_2D, texture, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
         return texture;
     }
 

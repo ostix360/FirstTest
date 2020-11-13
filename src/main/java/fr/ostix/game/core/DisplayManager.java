@@ -32,7 +32,7 @@ public class DisplayManager {
         if (!glfwInit()) throw new RuntimeException("Unable/Failed to Initialize GLFW");
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
@@ -65,8 +65,9 @@ public class DisplayManager {
         );
         glfwMakeContextCurrent(window);
 
-        GL.createCapabilities();
 
+        GL.createCapabilities();
+        LOGGER.debug(GL.getCapabilities().OpenGL33);
         glfwSwapInterval(1);
 
 
