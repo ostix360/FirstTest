@@ -7,10 +7,7 @@ import fr.ostix.game.graphics.textures.TextureData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -118,6 +115,34 @@ public class Loader {
         return texID;
     }
 
+    public int createEmptyVBO(int count) {
+        int vbo = glGenBuffers();
+        vbos.add(vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, count * Float.BYTES, GL_STREAM_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        return vbo;
+    }
+
+    public void addInstance(int vao, int vbo, int attrib, int dataSize, int instanceDataLength, int offset) {
+        GL30.glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        GL20.glVertexAttribPointer(attrib, dataSize, GL_FLOAT, false, instanceDataLength * Float.BYTES, offset * Float.BYTES);
+        GL33.glVertexAttribDivisor(attrib, 1);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        GL30.glBindVertexArray(vao);
+    }
+
+    public void updateVBO(int vbo, float[] data, FloatBuffer buffer) {
+        buffer.clear();
+        buffer.put(data);
+        buffer.flip();
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, buffer.capacity() * Float.BYTES, GL_STREAM_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
     private TextureData decodeTextureFile(String fileName) {
         int width = 0;
         int height = 0;
@@ -146,13 +171,13 @@ public class Loader {
         return vaoID;
     }
 
-    private void storeDataInAttributeList(int attrib, int vecSize, float[] data) {
+    private void storeDataInAttributeList(int attrib, int dataSize, float[] data) {
         int vbo = glGenBuffers();           //creation d'une addresse memoir pour le VBO
         vbos.add(vbo);                      //ajout de l'addresse memoir dans la liste de VertexBufferObject
         glBindBuffer(GL_ARRAY_BUFFER, vbo); //Activation de l'addresse memoir
         FloatBuffer buffer = createFloatBuffer(data);   //creation d'une memoir tampon (Buffer) du tableau a ajouter dans notre VAO
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);  //Definition des données dans une memoir tampon (Buffer)
-        GL20.glVertexAttribPointer(attrib, vecSize, GL11.GL_FLOAT, false, 0, 0);     //Definition de l'index,nombre de donné a lire dans le tableau par arrete,type de variable,sont des vecteur normalizer ou pas dans la memoir tampon
+        GL20.glVertexAttribPointer(attrib, dataSize, GL11.GL_FLOAT, false, 0, 0);     //Definition de l'index,nombre de donné a lire dans le tableau par arrete,type de variable,sont des vecteur normalizer ou pas dans la memoir tampon
         glBindBuffer(GL_ARRAY_BUFFER, 0);       //Desactivation du VBO actife
     }
 

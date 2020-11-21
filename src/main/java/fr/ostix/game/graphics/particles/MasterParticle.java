@@ -26,7 +26,8 @@ public class MasterParticle {
     public static void update(Camera cam) {
         Iterator<Map.Entry<ParticleTexture, List<Particle>>> mapIterator = particles.entrySet().iterator();
         while (mapIterator.hasNext()) {
-            List<Particle> list = mapIterator.next().getValue();
+            Map.Entry<ParticleTexture, List<Particle>> entry = mapIterator.next();
+            List<Particle> list = entry.getValue();
             Iterator<Particle> iterator = list.iterator();
             while (iterator.hasNext()) {
                 Particle p = iterator.next();
@@ -38,7 +39,9 @@ public class MasterParticle {
                     }
                 }
             }
-            InsertionSort.sortHighToLow(list);
+            if (!entry.getKey().isAdditive()) {
+                InsertionSort.sortHighToLow(list);
+            }
         }
 
     }
