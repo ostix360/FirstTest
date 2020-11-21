@@ -95,6 +95,6 @@ public class WaterRenderer {
     }
 
     public void cleanUp() {
-        shader.cleanUP();
+        shader.cleanUp();
     }
 }

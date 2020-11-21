@@ -1,6 +1,7 @@
 package fr.ostix.game.font.meshCreator;
 
 import fr.ostix.game.font.rendering.MasterFont;
+import fr.ostix.game.graphics.Color;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -9,14 +10,14 @@ public class GUIText {
 
     private final String textString;
     private final float fontSize;
-    private final Vector3f colour = new Vector3f(0f, 0f, 0f);
+    private final boolean centerText;
     private final Vector2f position;
     private final float lineMaxSize;
     private final FontType font;
     private int textMeshVao;
     private int vertexCount;
     private int numberOfLines;
-    private boolean centerText = false;
+    private Vector3f colour = new Vector3f(0f, 0f, 0f);
 
     public GUIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength,
                    boolean centered) {
@@ -37,8 +38,8 @@ public class GUIText {
         return font;
     }
 
-    public void setColour(float r, float g, float b) {
-        colour.set(r, g, b);
+    public void setColour(Color c) {
+        colour = c.getVec3f();
     }
 
 

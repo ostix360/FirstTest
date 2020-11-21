@@ -33,8 +33,4 @@ public class FontShader extends ShaderProgram {
     public void loadTranslation(Vector2f translation) {
         super.loadVerctor2fToUniform(location_translation, translation);
     }
-
-    public void cleanUp() {
-        super.cleanUP();
-    }
 }

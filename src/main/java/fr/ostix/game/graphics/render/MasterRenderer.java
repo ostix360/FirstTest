@@ -133,8 +133,8 @@ public class MasterRenderer {
 
 
     public void cleanUp() {
-        shader.cleanUP();
-        terrainShader.cleanUP();
+        shader.cleanUp();
+        terrainShader.cleanUp();
         glDisable(GL_BLEND);
     }
 

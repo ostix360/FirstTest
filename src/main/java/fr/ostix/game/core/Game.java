@@ -12,6 +12,9 @@ import fr.ostix.game.font.rendering.MasterFont;
 import fr.ostix.game.graphics.Color;
 import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.model.TextureModel;
+import fr.ostix.game.graphics.particles.MasterParticle;
+import fr.ostix.game.graphics.particles.ParticleSystem;
+import fr.ostix.game.graphics.particles.ParticleTexture;
 import fr.ostix.game.graphics.render.GUIRenderer;
 import fr.ostix.game.graphics.render.MasterRenderer;
 import fr.ostix.game.graphics.render.WaterRenderer;
@@ -68,6 +71,9 @@ public class Game {
     private List<WaterTile> waters;
     private WaterFrameBuffers waterFBOS;
     private GUITexture waterDepth;
+
+    //********ParticleSystem*******
+    private ParticleSystem playerParticle;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -169,9 +175,22 @@ public class Game {
 
         //*********TEXT**********
         MasterFont.init(loader);
-        FontType Liberty = new FontType(loader.loadTextureFont("Test001"), "Test001");
-        GUIText text1 = new GUIText("C'est un test", 2, Liberty, new Vector2f(0, 0.5f), 1f, true);
+        FontType Liberty = new FontType(loader.loadTextureFont("candara"), "candara");
+        GUIText text1 = new GUIText("Bienvenu dans ce jeu magique", 1f, Liberty, new Vector2f(0, 0.0f), 1f, true);
+        text1.setColour(Color.RED);
         MasterFont.loadTexte(text1);
+
+        //********PARTICLES*******
+        MasterParticle.init(loader, renderer.getProjectionMatrix());
+
+        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particle/fire"), 8, true);
+        playerParticle = new ParticleSystem(particleTexture, 15, 1.8f, 0.0f, 60 * 2f, 15);
+        playerParticle.randomizeRotation();
+        playerParticle.setLifeError(0.2f);
+        playerParticle.setDirection(new Vector3f(0, 0.3f, 0), 0.001f);
+        playerParticle.setSpeedError(0.5f);
+        playerParticle.setScaleError(0.05f);
+
     }
 
     public void start() {
@@ -187,6 +206,7 @@ public class Game {
     }
 
     public void exit() {
+        MasterParticle.cleanUp();
         MasterFont.cleanUp();
         waterFBOS.cleanUp();
         waterRenderer.cleanUp();
@@ -254,11 +274,14 @@ public class Game {
         cam.move(world);
         player.move(world);
         picker.update();
+        playerParticle.generateParticles(player.getPosition());
+        MasterParticle.update(cam);
         Vector3f terraintPoint = picker.getCurrentTerrainPoint();
         if (terraintPoint != null) {
             this.lamp.setPosition(terraintPoint);
             this.light.setPosition(new Vector3f(terraintPoint.x, terraintPoint.y + 12.5f, terraintPoint.z));
         }
+
         guiGame.update();
         glfwPollEvents();
     }
@@ -280,6 +303,9 @@ public class Game {
 
         renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
         waterRenderer.render(waters, cam, sun);
+
+        MasterParticle.render(cam);
+
         MasterFont.render();
         guiGame.render();
     }

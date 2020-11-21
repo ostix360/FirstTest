@@ -44,7 +44,7 @@ void main() {
         //level = floor(dampedFactor * levels);
         //dampedFactor = level/levels;
         totalDiffuse = totalDiffuse + (brightness * lightColour[i])/attenuationFactor;
-        totalSpeculare = totalSpeculare + max(vec3(0.),(dampedFactor * lightColour[i] * reflectivity))/attenuationFactor;
+        totalSpeculare = totalSpeculare + max(vec3(0.), (dampedFactor * lightColour[i] * reflectivity))/attenuationFactor;
     }
 
     totalDiffuse = max(totalDiffuse, 0.1);

@@ -14,7 +14,7 @@ public class Player extends Entity {
 
     private static final float RUN_SPEED = 160;
     private static final float TURN_SPEED = 780;
-    private static final float GRAVITY = -6;
+    public static final float GRAVITY = -6;
     private static final float JUMP_POWER = 100;
 
     private float currentSpeed = 0;
@@ -42,10 +42,10 @@ public class Player extends Entity {
         upwardsSpeed += GRAVITY;
         super.increasePosition(0, upwardsSpeed * 0.01f, 0);
         float terrainHeight = getTerrain(terrains, super.getPosition().x, super.getPosition().z).getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
-        if (getPosition().y < terrainHeight) {
+        if (this.position.y < terrainHeight) {
             upwardsSpeed = 0;
             this.isInAir = false;
-            super.getPosition().y = terrainHeight;
+            super.position.y = terrainHeight;
         }
     }
 

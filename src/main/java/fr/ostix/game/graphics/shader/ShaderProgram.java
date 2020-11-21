@@ -105,10 +105,10 @@ public abstract class ShaderProgram {
     }
 
 
-    public void cleanUP(){
+    public void cleanUp() {
         unBind();
-        glDetachShader(programID,vertexShaderID);
-        glDetachShader(programID,fragmentShaderID);
+        glDetachShader(programID, vertexShaderID);
+        glDetachShader(programID, fragmentShaderID);
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
         glDeleteProgram(programID);

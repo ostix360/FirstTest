@@ -54,7 +54,7 @@ void main() {
         specularFactor = max(specularFactor, 0.0);
         float dampedFactor = pow(specularFactor, shineDamper);
         totalDiffuse = totalDiffuse + (brightness * lightColour[i])/attenuationFactor;
-        totalSpeculare = totalSpeculare + (dampedFactor * lightColour[i] * reflectivity)/attenuationFactor;
+        totalSpeculare = totalSpeculare + max(vec3(0.), (dampedFactor * lightColour[i] * reflectivity))/attenuationFactor;
     }
 
     totalDiffuse = max(totalDiffuse, 0.1);

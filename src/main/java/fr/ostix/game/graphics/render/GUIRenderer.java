@@ -47,6 +47,6 @@ public class GUIRenderer {
     }
 
     public void cleanUp() {
-        shader.cleanUP();
+        shader.cleanUp();
     }
 }

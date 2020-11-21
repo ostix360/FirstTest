@@ -4,10 +4,10 @@ import fr.ostix.game.graphics.model.TextureModel;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Entity {
-    private TextureModel model;
-    private Vector3f position;
-    private float rotx,roty,rotz;
-    private float scale;
+    protected TextureModel model;
+    protected Vector3f position;
+    protected float rotx, roty, rotz;
+    protected float scale;
 
     private int textureIndex = 0;
 
@@ -61,7 +61,7 @@ public class Entity {
     }
 
     public Vector3f getPosition() {
-        return position;
+        return new Vector3f(position.getX(), position.getY(), position.getZ());
     }
 
     public void setPosition(Vector3f position) {
