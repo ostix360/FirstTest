@@ -1,6 +1,21 @@
 # Compiled class file
 *.class
 
+# other
+eclipse
+run
+
+# gradle
+build
+.gradle
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
 # Log file
 *.log
 
