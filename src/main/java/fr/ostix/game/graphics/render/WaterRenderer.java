@@ -58,6 +58,7 @@ public class WaterRenderer {
     }
 
     private void prepareRender(Camera camera, Light sun) {
+        glEnable(GL_DEPTH_TEST);
         shader.bind();
         shader.loadViewMatrix(camera);
         waveMove += WAVE_SPEED * DisplayManager.getFrameTimeSeconde();

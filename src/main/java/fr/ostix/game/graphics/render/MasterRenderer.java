@@ -9,8 +9,10 @@ import fr.ostix.game.graphics.Color;
 import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.shader.Shader;
 import fr.ostix.game.graphics.shader.TerrainShader;
+import fr.ostix.game.graphics.shadows.ShadowMapMasterRenderer;
 import fr.ostix.game.skybox.SkyboxRenderer;
 import fr.ostix.game.world.Terrain;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 
@@ -22,7 +24,7 @@ import java.util.Map;
 import static org.lwjgl.opengl.GL11.*;
 
 public class MasterRenderer {
-    private static final float FOV = 70f;
+    public static final float FOV = 70f;
     public static final float NEAR_PLANE = 0.1f;
     public static final float FAR_PLANE = 1000f;
 
@@ -38,16 +40,18 @@ public class MasterRenderer {
     private final TerrainShader terrainShader = new TerrainShader();
 
     private final SkyboxRenderer skyboxRenderer;
+    private final ShadowMapMasterRenderer shadowRenderer;
 
     private final Map<TextureModel, List<Entity>> entities = new HashMap<>();
     private final List<Terrain> terrains = new ArrayList<>();
 
-    public MasterRenderer(Loader loader) {
+    public MasterRenderer(Loader loader, Camera cam) {
         enableCulling();
-        createProjectionMatirx();
+        createProjectionMatrix();
         entityRenderer = new EntityRenderer(shader, projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
         skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
+        this.shadowRenderer = new ShadowMapMasterRenderer(cam);
     }
 
     public void renderScene(List<Entity> entities, Terrain[][] terrains, List<Light> lights, Camera camera, Vector4f clipPlane) {
@@ -69,26 +73,38 @@ public class MasterRenderer {
         shader.loadSkyColour(skyColor);
         shader.loadLights(ligths);
         shader.loadViewMatrix(cam);
-        entityRenderer.render(entities);
+        entityRenderer.render(entities, shadowRenderer.getToShadowMapSpaceMatrix());
         shader.unBind();
         terrainShader.bind();
         terrainShader.loadClipPlane(clipPlane);
         terrainShader.loadSkyColour(skyColor);
         terrainShader.loadLights(ligths);
         terrainShader.loadViewMatrix(cam);
-        terrainRenderer.render(terrains);
+        terrainRenderer.render(terrains, shadowRenderer.getToShadowMapSpaceMatrix());
         skyboxRenderer.render(cam, skyColor);
         terrains.clear();
         entities.clear();
     }
 
     public void initFrame(Color color) {
+        glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GL13.glActiveTexture(GL13.GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, shadowRenderer.getShadowMap());
         this.skyColor = color;
+    }
+
+    public void renderShadowMap(List<Entity> entities, Light sun) {
+        for (Entity e : entities) {
+            processEntity(e);
+        }
+        shadowRenderer.render(this.entities, sun);
+        this.entities.clear();
+    }
+
+    public int getShadowMapTexture() {
+        return this.shadowRenderer.getShadowMap();
     }
 
     public static void enableCulling() {
@@ -100,13 +116,13 @@ public class MasterRenderer {
         glDisable(GL_CULL_FACE);
     }
 
-    private void createProjectionMatirx() {
+    private void createProjectionMatrix() {
+        projectionMatrix = new Matrix4f();
         float aspectRatio = (float) DisplayManager.getWidth() / (float) DisplayManager.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))));
         float x_scale = y_scale / aspectRatio;
         float frustum_length = FAR_PLANE - NEAR_PLANE;
 
-        projectionMatrix = new Matrix4f();
         projectionMatrix.m00 = x_scale;
         projectionMatrix.m11 = y_scale;
         projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
@@ -133,9 +149,10 @@ public class MasterRenderer {
 
 
     public void cleanUp() {
-        shader.cleanUp();
-        terrainShader.cleanUp();
+        this.shader.cleanUp();
+        this.terrainShader.cleanUp();
         glDisable(GL_BLEND);
+        this.shadowRenderer.cleanUp();
     }
 
 

@@ -21,19 +21,21 @@ public class EntityRenderer {
 
     private final Shader shader;
 
-    public EntityRenderer(Shader shader,Matrix4f projectionMatrix) {
+    public EntityRenderer(Shader shader, Matrix4f projectionMatrix) {
         this.shader = shader;
         shader.bind();
         shader.loadProjectionMatrix(projectionMatrix);
+        shader.connectTextureUnits();
         shader.unBind();
     }
 
 
-    public void render(Map<TextureModel, List<Entity>> entities){
-        for (TextureModel model : entities.keySet()){
+    public void render(Map<TextureModel, List<Entity>> entities, Matrix4f toShadowSpace) {
+        shader.loadShaderMapSpace(toShadowSpace);
+        for (TextureModel model : entities.keySet()) {
             prepareTexturedModel(model);
             List<Entity> batch = entities.get(model);
-            for (Entity entity : batch){
+            for (Entity entity : batch) {
                 prepareInstance(entity);
                 glDrawElements(GL_TRIANGLES, model.getMeshModel().getVertexCount(), GL_UNSIGNED_INT, 0);
             }
@@ -66,10 +68,10 @@ public class EntityRenderer {
         GL30.glDeleteVertexArrays(0);
     }
 
-    private void prepareInstance(Entity entity){
-        Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotx(), entity.getRoty(),
-                entity.getRotz(), entity.getScale());
+    private void prepareInstance(Entity entity) {
+        Matrix4f transformationMatrix = Maths.createTransformationMatrix(entity.getPosition(), entity.getRotX(), entity.getRotY(),
+                entity.getRotZ(), entity.getScale());
         shader.loadTransformationMatrix(transformationMatrix);
-        shader.loadOffset(entity.getTextureXOffset(),entity.getTextureYoffset());
+        shader.loadOffset(entity.getTextureXOffset(), entity.getTextureYoffset());
     }
 }

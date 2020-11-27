@@ -16,7 +16,7 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 
 public class TerrainRenderer {
-     private final TerrainShader shader;
+    private final TerrainShader shader;
 
     public TerrainRenderer(TerrainShader shader, Matrix4f projectionMatrix) {
         this.shader = shader;
@@ -26,8 +26,9 @@ public class TerrainRenderer {
         shader.unBind();
     }
 
-    public void render(List<Terrain> terrains){
-        for (Terrain ter:terrains){
+    public void render(List<Terrain> terrains, Matrix4f toShadowSpace) {
+        shader.loadShaderMapSpace(toShadowSpace);
+        for (Terrain ter : terrains) {
             prepareTerrain(ter);
             loadModelMatrix(ter);
             glDrawElements(GL_TRIANGLES, ter.getModel().getVertexCount(), GL_UNSIGNED_INT, 0);

@@ -14,7 +14,6 @@ import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.particles.MasterParticle;
 import fr.ostix.game.graphics.particles.ParticleSystem;
-import fr.ostix.game.graphics.particles.ParticleTexture;
 import fr.ostix.game.graphics.render.GUIRenderer;
 import fr.ostix.game.graphics.render.MasterRenderer;
 import fr.ostix.game.graphics.render.WaterRenderer;
@@ -125,51 +124,55 @@ public class Game {
             x = r.nextFloat() * 1600;
             z = r.nextFloat() * 1600;
             entities.add(new Entity(fernModel, new Vector3f(x, getTerrain(world, x, z).getHeightOfTerrain(x, z), z),
-                    0, 0, 0, 0.3f));
+                    0, 0, 0, 5f));
         }
 
         this.lamp = new Entity(lamp, new Vector3f(100, getTerrain(world, 100, 0).getHeightOfTerrain(100, 0), 0), 0, 0, 0, 1);
         entities.add(this.lamp);
         entities.add(new Entity(lamp, new Vector3f(370, getTerrain(world, 370, 200).getHeightOfTerrain(370, 200), 200), 0, 0, 0, 1));
 
+        player = new Player(playerModel, new Vector3f(10, 0, 10), 0, 0, 0, 1);
+        entities.add(player);
+
+        cam = new Camera(player);
+
+        renderer = new MasterRenderer(loader, cam);
+
+        //*******Light*******
         light = new Light(new Vector3f(100, getTerrain(world, 0, 0).getHeightOfTerrain(100, 0) + 11f, 0), new Color(1.5f, 0, 0), new Vector3f(0.9f, 0.01f, 0.002f));
         Light light2 = new Light(new Vector3f(370, getTerrain(world, 370, 200).getHeightOfTerrain(100, 200), 200), Color.CYAN);
 
+        sun = new Light(new Vector3f(100000, 100000, -100000), Color.SUN);
+        lights.add(light);
+        lights.add(sun);
+        lights.add(light2);
+        //*******Gui*********
         List<GUITexture> guis = new ArrayList<>();
         GUITexture gui1 = new GUITexture(new ModelTexture(loader.loadTexture("gui/socuwan")), new Vector2f(0.9f, 0.9f), new Vector2f(0.1f, 0.1f));
         guis.add(gui1);
         guiRender = new GUIRenderer(loader);
 
-
         GUITexture guiHealth = new GUITexture(new ModelTexture(loader.loadTexture("gui/health")), new Vector2f(-0.5f, -0.5f), new Vector2f(0.25f, 0.25f));
 
-
-        player = new Player(playerModel, new Vector3f(10, 0, 10), 0, 0, 0, 1);
-        entities.add(player);
-
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
+        //guis.add(new GUITexture(renderer.getShadowMapTexture(),new Vector2f(0.5f,0.5f),new Vector2f(0.5f,0.5f)));
 
-        sun = new Light(new Vector3f(0, 10, 0), Color.SUN);
-        lights.add(light);
-        lights.add(sun);
-        //lights.add(light2);
 
-        cam = new Camera(player);
 
-        renderer = new MasterRenderer(loader);
+
 
         picker = new MousePicker(renderer.getProjectionMatrix(), cam, world);
 
 
         //*************WATER************
         waters = new ArrayList<>();
-        waters.add(new WaterTile(100, 100, 0));
+        waters.add(new WaterTile(100, 120, -2));
         waterFBOS = new WaterFrameBuffers();
 
 
         WaterShader waterShader = new WaterShader();
         this.waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), waterFBOS);
-        // waterDepth = new GUITexture(new ModelTexture(waterFBOS.getRefractionDepthTexture()), new Vector2f(-0.75f, 0.75f), new Vector2f(0.25f, 0.25f));
+        waterDepth = new GUITexture(new ModelTexture(waterFBOS.getRefractionDepthTexture()), new Vector2f(-0.75f, 0.75f), new Vector2f(0.25f, 0.25f));
         //guis.add(new GUITexture(new ModelTexture(waterFBOS.getRefractionTexture()), new Vector2f(0.75f, 0.75f), new Vector2f(0.25f, 0.25f)));
         //guis.add(waterDepth);
 
@@ -181,15 +184,15 @@ public class Game {
         MasterFont.loadTexte(text1);
 
         //********PARTICLES*******
-        MasterParticle.init(loader, renderer.getProjectionMatrix());
-
-        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particle/fire"), 8, true);
-        playerParticle = new ParticleSystem(particleTexture, 15, 1.8f, 0.0f, 60 * 2f, 15);
-        playerParticle.randomizeRotation();
-        playerParticle.setLifeError(0.2f);
-        playerParticle.setDirection(new Vector3f(0, 0.3f, 0), 0.001f);
-        playerParticle.setSpeedError(0.5f);
-        playerParticle.setScaleError(0.05f);
+//        MasterParticle.init(loader, renderer.getProjectionMatrix());
+//
+//        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particle/fire"), 8, true);
+//        playerParticle = new ParticleSystem(particleTexture, 15, 1.8f, 0.0f, 60 * 2f, 15);
+//        playerParticle.randomizeRotation();
+//        playerParticle.setLifeError(0.2f);
+//        playerParticle.setDirection(new Vector3f(0, 0.3f, 0), 0.001f);
+//        playerParticle.setSpeedError(0.5f);
+//        playerParticle.setScaleError(0.05f);
 
     }
 
@@ -206,7 +209,7 @@ public class Game {
     }
 
     public void exit() {
-        MasterParticle.cleanUp();
+        //MasterParticle.cleanUp();
         MasterFont.cleanUp();
         waterFBOS.cleanUp();
         waterRenderer.cleanUp();
@@ -274,7 +277,7 @@ public class Game {
         cam.move(world);
         player.move(world);
         picker.update();
-        playerParticle.generateParticles(player.getPosition());
+        //playerParticle.generateParticles(player.getPosition());
         MasterParticle.update(cam);
         Vector3f terraintPoint = picker.getCurrentTerrainPoint();
         if (terraintPoint != null) {
@@ -287,24 +290,29 @@ public class Game {
     }
 
     private void render() {
-        waterFBOS.bindReflectionFrameBuffer();
-        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
-        cam.getPosition().y -= distance;
-        cam.invertPitch();
-        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
-        cam.getPosition().y += distance;
-        cam.invertPitch();
 
-        waterFBOS.bindRefractionFrameBuffer();
-        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
+        renderer.renderShadowMap(entities, sun);
 
         GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
-        waterFBOS.unbindCurrentFrameBuffer();
+
+//        waterFBOS.bindReflectionFrameBuffer();
+//        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
+//        cam.getPosition().y -= distance;
+//        cam.invertPitch();
+//        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
+//        cam.getPosition().y += distance;
+//        cam.invertPitch();
+//
+//        waterFBOS.bindRefractionFrameBuffer();
+//        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
+//
+//
+//        waterFBOS.unbindCurrentFrameBuffer();
 
         renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
         waterRenderer.render(waters, cam, sun);
 
-        MasterParticle.render(cam);
+        //MasterParticle.render(cam);
 
         MasterFont.render();
         guiGame.render();

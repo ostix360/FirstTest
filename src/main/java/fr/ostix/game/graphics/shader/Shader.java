@@ -29,7 +29,9 @@ public class Shader extends ShaderProgram {
     private int location_offset;
     private int location_inverseNormal;
     private int location_plane;
-
+    private int location_toShadowMapSpace;
+    private int location_shadowMap;
+    private int location_textureEntity;
 
     public Shader() {
         super("defaultShader.vert", "defaultShader.frag");
@@ -55,6 +57,9 @@ public class Shader extends ShaderProgram {
         location_offset = super.getUniformLocation("offset");
         location_inverseNormal = super.getUniformLocation("inverseNormal");
         location_plane = super.getUniformLocation("plane");
+        location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+        location_shadowMap = super.getUniformLocation("shadowMap");
+        location_textureEntity = super.getUniformLocation("textureEntity");
 
         location_lightPosition = new int[MAX_LIGHTS];
         location_lightColour = new int[MAX_LIGHTS];
@@ -64,6 +69,15 @@ public class Shader extends ShaderProgram {
             location_lightColour[i] = super.getUniformLocation("lightColour[" + i + "]");
             location_lightAttenuation[i] = super.getUniformLocation("attenuation[" + i + "]");
         }
+    }
+
+    public void connectTextureUnits() {
+        super.loadInt(location_textureEntity, 0);
+        super.loadInt(location_shadowMap, 5);
+    }
+
+    public void loadShaderMapSpace(Matrix4f matrix) {
+        super.loadMatrixToUniform(location_toShadowMapSpace, matrix);
     }
 
     public void loadClipPlane(Vector4f value) {

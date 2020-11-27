@@ -9,6 +9,7 @@ out vec3 surfaceNormal;
 out vec3 toLightVector[2];
 out vec3 toCameraVector;
 out float visibility;
+out vec4 shadowCoords;
 
 uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
@@ -16,11 +17,18 @@ uniform mat4 viewMatrix;
 uniform vec3 lightPosition[2];
 uniform vec4 plane;
 
+uniform mat4 toShadowMapSpace;
+
 const float density = 0.00265;
 const float gradient = 3.8;
 
+const float shadowDistance = 2000.0;
+const float transitionDistance = 1.0;
+
 void main() {
     vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+
+    shadowCoords = toShadowMapSpace * worldPosition;
 
     gl_ClipDistance[0] = dot(worldPosition, plane);
 
@@ -38,4 +46,8 @@ void main() {
     float distance = length(relativePositionToCamera.xyz);
     visibility = exp(-pow((distance * density), gradient));
     visibility = clamp(visibility, 0.0, 1.0);
+
+    distance -= shadowDistance - transitionDistance;
+    distance /= transitionDistance;
+    shadowCoords.w = clamp(1.0-distance, 0.0, 1.0);
 }

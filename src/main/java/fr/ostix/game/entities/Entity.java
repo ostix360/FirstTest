@@ -68,7 +68,7 @@ public class Entity {
         this.position = position;
     }
 
-    public float getRotx() {
+    public float getRotX() {
         return rotx;
     }
 
@@ -76,7 +76,7 @@ public class Entity {
         this.rotx = rotx;
     }
 
-    public float getRoty() {
+    public float getRotY() {
         return roty;
     }
 
@@ -84,7 +84,7 @@ public class Entity {
         this.roty = roty;
     }
 
-    public float getRotz() {
+    public float getRotZ() {
         return rotz;
     }
 

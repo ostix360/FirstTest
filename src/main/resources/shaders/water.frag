@@ -55,7 +55,7 @@ void main(void) {
 
     vec3 viewVector = normalize(toCameraVector);
     float refractiveFactor = dot(viewVector, normal);
-    refractiveFactor = pow(refractiveFactor, 0.1);
+    refractiveFactor = pow(refractiveFactor, 0.25);
     refractiveFactor = clamp(refractiveFactor, 0.0, 1.0);
 
     vec3 reflectedLight = reflect(normalize(fromLightPosition), normal);

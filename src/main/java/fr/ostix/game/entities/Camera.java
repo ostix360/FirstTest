@@ -37,7 +37,7 @@ public class Camera {
         float horizontalDistance = calculateHorizontalDistance();
         float verticalDistance = calculateVerticalDistance();
         caculateCameraPosition(horizontalDistance, verticalDistance);
-        this.yaw = 180 - (player.getRoty() + angleAroundPlayer);
+        this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
     }
 
     private float calculateHorizontalDistance() {
@@ -48,19 +48,19 @@ public class Camera {
         return (float) (distanceFromPlayer * Math.sin(Math.toRadians(pitch)));
     }
 
-    private void caculateZoom(){
+    private void caculateZoom() {
         float zoomLevel = Input.getMouseDWhell();
         distanceFromPlayer -= zoomLevel;
         if (distanceFromPlayer <= 3) {
             distanceFromPlayer = 3;
         }
-        if (distanceFromPlayer >= 125) {
-            distanceFromPlayer = 125;
+        if (distanceFromPlayer >= 105) {
+            distanceFromPlayer = 105;
         }
     }
 
     private void caculateCameraPosition(float horzontalDistance, float verticalDistance) {
-        float theta = player.getRoty() + angleAroundPlayer;
+        float theta = player.getRotY() + angleAroundPlayer;
         float xoffset = (float) (horzontalDistance * Math.sin(Math.toRadians(theta)));
         float zoffset = (float) (horzontalDistance * Math.cos(Math.toRadians(theta)));
         position.x = player.getPosition().x - xoffset;
