@@ -21,6 +21,8 @@ import fr.ostix.game.graphics.shader.WaterShader;
 import fr.ostix.game.graphics.textures.ModelTexture;
 import fr.ostix.game.gui.GUIGame;
 import fr.ostix.game.gui.GUITexture;
+import fr.ostix.game.postProcessing.Fbo;
+import fr.ostix.game.postProcessing.PostProcessing;
 import fr.ostix.game.world.Terrain;
 import fr.ostix.game.world.texture.TerrainTexture;
 import fr.ostix.game.world.texture.TerrainTexturePack;
@@ -73,6 +75,9 @@ public class Game {
 
     //********ParticleSystem*******
     private ParticleSystem playerParticle;
+
+    //********PostProcessing*******
+    private Fbo fbo;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -194,6 +199,10 @@ public class Game {
 //        playerParticle.setSpeedError(0.5f);
 //        playerParticle.setScaleError(0.05f);
 
+        //********PostProcessing*******
+        PostProcessing.init(loader);
+        fbo = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
+
     }
 
     public void start() {
@@ -209,6 +218,8 @@ public class Game {
     }
 
     public void exit() {
+        fbo.cleanUp();
+        PostProcessing.cleanUp();
         //MasterParticle.cleanUp();
         MasterFont.cleanUp();
         waterFBOS.cleanUp();
@@ -291,7 +302,7 @@ public class Game {
 
     private void render() {
 
-        renderer.renderShadowMap(entities, sun);
+//        renderer.renderShadowMap(entities, sun);
 
         GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 
@@ -308,11 +319,14 @@ public class Game {
 //
 //
 //        waterFBOS.unbindCurrentFrameBuffer();
-
+        fbo.bindFrameBuffer();
         renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
         waterRenderer.render(waters, cam, sun);
 
         //MasterParticle.render(cam);
+
+        fbo.unbindFrameBuffer();
+        PostProcessing.doPostProcessing(fbo.getColourTexture());
 
         MasterFont.render();
         guiGame.render();

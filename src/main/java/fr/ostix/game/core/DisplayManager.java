@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryStack;
 
@@ -31,10 +32,12 @@ public class DisplayManager {
 
         if (!glfwInit()) throw new RuntimeException("Unable/Failed to Initialize GLFW");
 
+
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         String title = "Test";
         window = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -70,8 +73,8 @@ public class DisplayManager {
         LOGGER.debug(GL.getCapabilities().OpenGL33);
         glfwSwapInterval(1);
 
-
-        GL11.glViewport(0,0, width, height);
+        GL11.glEnable(GL13.GL_MULTISAMPLE);
+        GL11.glViewport(0, 0, width, height);
         return window;
     }
 

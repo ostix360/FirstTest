@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ShadowMapMasterRenderer {
 
-	private static final int SHADOW_MAP_SIZE = 8192;
+	private static final int SHADOW_MAP_SIZE = 6052;
 
 	private final ShadowFrameBuffer shadowFbo;
 	private final ShadowShader shader;
