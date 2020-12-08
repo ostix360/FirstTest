@@ -5,10 +5,13 @@ in vec3 surfaceNormal;
 in vec3 toLightVector[2];
 in vec3 toCameraVector;
 in float visibility;
+in vec4 shadowCoords;
 
 out vec4 out_Color;
 
-uniform sampler2D textureSampler;
+uniform sampler2D textureEntity;
+uniform sampler2D shadowMap;
+
 uniform vec3 lightColour[2];
 uniform vec3 attenuation[2];
 uniform float shineDamper;
@@ -17,7 +20,27 @@ uniform vec3 skyColour;
 
 const float levels = 5;
 
+const int pcfCount = 3;
+const float totalsTexels = (pcfCount * 2 - 1) * (pcfCount * 2 - 1);
+
 void main() {
+
+    float shadowMapSize = 8192;
+    float texelSize = 1/shadowMapSize;
+    float total = 0.0;
+
+    for (int x =-pcfCount; x <= pcfCount; x++){
+        for (int y =-pcfCount; y <= pcfCount; y++){
+            float objectNearstLght = texture(shadowMap, shadowCoords.xy + vec2(x, y) * texelSize).r;
+            if (shadowCoords.z > objectNearstLght+0.003){
+                total += 1.0;
+            }
+        }
+    }
+    total /= totalsTexels;
+
+    float lightFactor = 1.0 - (clamp(total, 0.0, 0.5) * shadowCoords.w);
+
 
     vec3 unitNormal = normalize(surfaceNormal);
     vec3 unitVectorToCamera = normalize(toCameraVector);
@@ -27,7 +50,7 @@ void main() {
 
     for (int i = 0;i<2;i++){
         float distance = length(toLightVector[i]);
-        float attenuationFactor = attenuation[i].x + (attenuation[i].y * distance) + (attenuation[i].z * distance * distance);
+        float attenuationFactor = max(attenuation[i].x + (attenuation[i].y * distance) + (attenuation[i].z * distance * distance), 1.0);
         vec3 unitLightVector = normalize(toLightVector[i]);
 
         float nDotl = dot(unitNormal, unitLightVector);
@@ -47,9 +70,9 @@ void main() {
         totalSpeculare = totalSpeculare + max(vec3(0.), (dampedFactor * lightColour[i] * reflectivity))/attenuationFactor;
     }
 
-    totalDiffuse = max(totalDiffuse, 0.1);
+    totalDiffuse = max(totalDiffuse, 0.1)*lightFactor;
 
-    vec4 textureColor = texture(textureSampler, pass_textureCoords);
+    vec4 textureColor = texture(textureEntity, pass_textureCoords);
     if (textureColor.a < 0.1){
         discard;
     }

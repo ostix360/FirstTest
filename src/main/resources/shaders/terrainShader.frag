@@ -22,7 +22,7 @@ uniform float shineDamper;
 uniform float reflectivity;
 uniform vec3 skyColour;
 
-const int pcfCount = 1;
+const int pcfCount = 2;
 const float totalsTexels = (pcfCount * 2 - 1) * (pcfCount * 2 - 1);
 
 void main() {
@@ -42,7 +42,7 @@ void main() {
 
     total /= totalsTexels;
 
-    float lightFactor = 1.0 -  (clamp(total, 0.0, 0.5) * shadowCoords.w);
+    float lightFactor = 1.0 -  (clamp(total, 0.0, 0.6) * shadowCoords.w);
 
 
     vec4 blendMapColour = texture(blendMap, pass_textureCoords);

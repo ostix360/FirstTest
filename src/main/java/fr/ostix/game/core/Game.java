@@ -14,6 +14,7 @@ import fr.ostix.game.graphics.model.MeshModel;
 import fr.ostix.game.graphics.model.TextureModel;
 import fr.ostix.game.graphics.particles.MasterParticle;
 import fr.ostix.game.graphics.particles.ParticleSystem;
+import fr.ostix.game.graphics.particles.ParticleTexture;
 import fr.ostix.game.graphics.render.GUIRenderer;
 import fr.ostix.game.graphics.render.MasterRenderer;
 import fr.ostix.game.graphics.render.WaterRenderer;
@@ -189,15 +190,15 @@ public class Game {
         MasterFont.loadTexte(text1);
 
         //********PARTICLES*******
-//        MasterParticle.init(loader, renderer.getProjectionMatrix());
-//
-//        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particle/fire"), 8, true);
-//        playerParticle = new ParticleSystem(particleTexture, 15, 1.8f, 0.0f, 60 * 2f, 15);
-//        playerParticle.randomizeRotation();
-//        playerParticle.setLifeError(0.2f);
-//        playerParticle.setDirection(new Vector3f(0, 0.3f, 0), 0.001f);
-//        playerParticle.setSpeedError(0.5f);
-//        playerParticle.setScaleError(0.05f);
+        MasterParticle.init(loader, renderer.getProjectionMatrix());
+
+        ParticleTexture particleTexture = new ParticleTexture(loader.loadTexture("particle/fire"), 8, true);
+        playerParticle = new ParticleSystem(particleTexture, 15, 1.8f, 0.0f, 60 * 2f, 15);
+        playerParticle.randomizeRotation();
+        playerParticle.setLifeError(0.2f);
+        playerParticle.setDirection(new Vector3f(0, 0.3f, 0), 0.001f);
+        playerParticle.setSpeedError(0.5f);
+        playerParticle.setScaleError(0.05f);
 
         //********PostProcessing*******
         PostProcessing.init(loader);
@@ -220,7 +221,7 @@ public class Game {
     public void exit() {
         fbo.cleanUp();
         PostProcessing.cleanUp();
-        //MasterParticle.cleanUp();
+        MasterParticle.cleanUp();
         MasterFont.cleanUp();
         waterFBOS.cleanUp();
         waterRenderer.cleanUp();
@@ -288,7 +289,7 @@ public class Game {
         cam.move(world);
         player.move(world);
         picker.update();
-        //playerParticle.generateParticles(player.getPosition());
+        playerParticle.generateParticles(player.getPosition());
         MasterParticle.update(cam);
         Vector3f terraintPoint = picker.getCurrentTerrainPoint();
         if (terraintPoint != null) {
@@ -302,28 +303,28 @@ public class Game {
 
     private void render() {
 
-//        renderer.renderShadowMap(entities, sun);
+        renderer.renderShadowMap(entities, sun);
 
         GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 
-//        waterFBOS.bindReflectionFrameBuffer();
-//        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
-//        cam.getPosition().y -= distance;
-//        cam.invertPitch();
-//        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
-//        cam.getPosition().y += distance;
-//        cam.invertPitch();
-//
-//        waterFBOS.bindRefractionFrameBuffer();
-//        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
-//
-//
-//        waterFBOS.unbindCurrentFrameBuffer();
+        waterFBOS.bindReflectionFrameBuffer();
+        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
+        cam.getPosition().y -= distance;
+        cam.invertPitch();
+        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
+        cam.getPosition().y += distance;
+        cam.invertPitch();
+
+        waterFBOS.bindRefractionFrameBuffer();
+        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
+
+
+        waterFBOS.unbindCurrentFrameBuffer();
         fbo.bindFrameBuffer();
         renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
         waterRenderer.render(waters, cam, sun);
 
-        //MasterParticle.render(cam);
+        MasterParticle.render(cam);
 
         fbo.unbindFrameBuffer();
         PostProcessing.doPostProcessing(fbo.getColourTexture());
