@@ -32,13 +32,13 @@ public class GUITexture {
     }
 
     public float getTextureXOffset() {
-        float column = textureIndex % texture.getNubersOfRows();
-        return column / texture.getNubersOfRows();
+        float column = textureIndex % texture.getNumbersOfRows();
+        return column / texture.getNumbersOfRows();
     }
 
     public float getTextureYoffset() {
-        float row = textureIndex / (float) texture.getNubersOfRows();
-        return row / texture.getNubersOfRows();
+        float row = textureIndex / (float) texture.getNumbersOfRows();
+        return row / texture.getNumbersOfRows();
     }
 
     public int getTextureID() {

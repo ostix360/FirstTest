@@ -41,6 +41,7 @@ public class Loader {
         return new MeshModel(vaoID, indices.length);
     }
 
+
     /**
      * @param positions     Tableaux des positions des Arrets
      * @param textureCoords Tableaux des coordonées de la texture par rapport au model
@@ -53,6 +54,24 @@ public class Loader {
         storeDataInAttributeList(0, 3, positions);      //Integration des positions dans notre addresse memoir VAO avec comme index 0 et nombre de valeur par position 3
         storeDataInAttributeList(1, 2, textureCoords);      //Integration des positions de la texture dans notre addresse memoir VAO avec comme index 1 et nombre de valeur par position 2
         storeDataInAttributeList(2, 3, normals);    //Integration des vecteur normals dans notre addresse memoir VAO avec comme index 1 et nombre de valeur par position 3
+        unbindVAO();
+        return new MeshModel(vaoID, indices.length);
+    }
+
+    /**
+     * @param positions     Tableaux des positions des Arrets
+     * @param textureCoords Tableaux des coordonées de la texture par rapport au model
+     * @param normals       Tableaux des Vecteur Normals
+     * @param tangents      Tableaux des Vecteur des Tangents
+     * @param indices       Tableaux d'indice pour optimiser le nombre d'arrete
+     */
+    public MeshModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, float[] tangents, int[] indices) {
+        int vaoID = createVAO();            //creation d'une addresse memoir pour le VAO
+        bindIndicesBuffer(indices);         //Definition des indices dans une memoir tampon (Buffer)
+        storeDataInAttributeList(0, 3, positions);      //Integration des positions dans notre addresse memoir VAO avec comme index 0 et nombre de valeur par position 3
+        storeDataInAttributeList(1, 2, textureCoords);      //Integration des positions de la texture dans notre addresse memoir VAO avec comme index 1 et nombre de valeur par position 2
+        storeDataInAttributeList(2, 3, normals);    //Integration des vecteur normals dans notre addresse memoir VAO avec comme index 2 et nombre de valeur par position 3
+        storeDataInAttributeList(3, 3, tangents);    //Integration des vecteur tangents dans notre addresse memoir VAO avec comme index 3 et nombre de valeur par position 3
         unbindVAO();
         return new MeshModel(vaoID, indices.length);
     }

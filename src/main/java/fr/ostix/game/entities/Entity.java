@@ -36,20 +36,20 @@ public class Entity {
         this.position.z += dz;
     }
 
-    public void increaseRotation(float rx,float ry,float rz){
+    public void increaseRotation(float rx, float ry, float rz) {
         this.rotx += rx;
         this.roty += ry;
         this.rotz += rz;
     }
 
-    public float getTextureXOffset(){
-        float column = textureIndex%model.getModelTexture().getNubersOfRows();
-        return column/model.getModelTexture().getNubersOfRows();
+    public float getTextureXOffset() {
+        float column = textureIndex % model.getModelTexture().getNumbersOfRows();
+        return column / model.getModelTexture().getNumbersOfRows();
     }
 
-    public float getTextureYoffset(){
-        float row = textureIndex/(float)model.getModelTexture().getNubersOfRows();
-        return row/model.getModelTexture().getNubersOfRows();
+    public float getTextureYOffset() {
+        float row = textureIndex / (float) model.getModelTexture().getNumbersOfRows();
+        return row / model.getModelTexture().getNumbersOfRows();
     }
 
     public TextureModel getModel() {

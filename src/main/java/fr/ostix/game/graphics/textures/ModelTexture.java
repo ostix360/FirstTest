@@ -3,11 +3,12 @@ package fr.ostix.game.graphics.textures;
 
 public class ModelTexture {
     private final int textureID;
+    private int normalMapID;
 
-    private final float shineDamper = 0;
-    private final float reflectivity = 0;
+    private float shineDamper = 0;
+    private float reflectivity = 0;
 
-    private int nubersOfRows = 1;
+    private int numbersOfRows = 1;
 
     private boolean isTransparency = false;
     private boolean useFakeLighting = false;
@@ -48,12 +49,30 @@ public class ModelTexture {
         return this;
     }
 
-    public void setNubersOfRows(int nubersOfRows) {
-        this.nubersOfRows = nubersOfRows;
+    public ModelTexture setShineDamper(float shineDamper) {
+        this.shineDamper = shineDamper;
+        return this;
     }
 
-    public int getNubersOfRows() {
-        return nubersOfRows;
+    public ModelTexture setReflectivity(float reflectivity) {
+        this.reflectivity = reflectivity;
+        return this;
+    }
+
+    public int getNormalMapID() {
+        return normalMapID;
+    }
+
+    public void setNormalMapID(int normalMapID) {
+        this.normalMapID = normalMapID;
+    }
+
+    public int getNumbersOfRows() {
+        return numbersOfRows;
+    }
+
+    public void setNumbersOfRows(int numbersOfRows) {
+        this.numbersOfRows = numbersOfRows;
     }
 
     public int geID() {

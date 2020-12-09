@@ -2,6 +2,7 @@ package fr.ostix.game.core;
 
 import fr.ostix.game.core.loader.Loader;
 import fr.ostix.game.core.loader.OBJFileLoader;
+import fr.ostix.game.core.loader.normalMappingObjConverter.NormalMappedObjLoader;
 import fr.ostix.game.entities.Camera;
 import fr.ostix.game.entities.Entity;
 import fr.ostix.game.entities.Light;
@@ -53,6 +54,7 @@ public class Game {
     public static boolean render = false;
 
     private List<Entity> entities;
+    private List<Entity> normalMapEntities;
     private final List<Light> lights = new ArrayList<>();
 
     private final Loader loader = new Loader();
@@ -78,7 +80,8 @@ public class Game {
     private ParticleSystem playerParticle;
 
     //********PostProcessing*******
-    private Fbo fbo;
+    private Fbo multiSampleFbo;
+    private Fbo outputFbo;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -117,6 +120,7 @@ public class Game {
 
 
         entities = new ArrayList<>();
+        normalMapEntities = new ArrayList<>();
         Random r = new Random();
         for (int i = 0; i < 500; i++) {
             float x = r.nextFloat() * 1600;
@@ -132,6 +136,10 @@ public class Game {
             entities.add(new Entity(fernModel, new Vector3f(x, getTerrain(world, x, z).getHeightOfTerrain(x, z), z),
                     0, 0, 0, 5f));
         }
+        TextureModel barrelModel = new TextureModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
+        barrelModel.getModelTexture().setShineDamper(10).setReflectivity(0.5f).setNormalMapID(loader.loadTexture("normalMap/barrelNormal").getId());
+
+        normalMapEntities.add(new Entity(barrelModel, new Vector3f(-75, 10, -75), 0, 0, 0, 1));
 
         this.lamp = new Entity(lamp, new Vector3f(100, getTerrain(world, 100, 0).getHeightOfTerrain(100, 0), 0), 0, 0, 0, 1);
         entities.add(this.lamp);
@@ -162,9 +170,6 @@ public class Game {
 
         guiGame = new GUIGame(guis, guiHealth, guiRender, player);
         //guis.add(new GUITexture(renderer.getShadowMapTexture(),new Vector2f(0.5f,0.5f),new Vector2f(0.5f,0.5f)));
-
-
-
 
 
         picker = new MousePicker(renderer.getProjectionMatrix(), cam, world);
@@ -202,7 +207,8 @@ public class Game {
 
         //********PostProcessing*******
         PostProcessing.init(loader);
-        fbo = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight(), Fbo.DEPTH_RENDER_BUFFER);
+        multiSampleFbo = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight());
+        outputFbo = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight(), Fbo.DEPTH_TEXTURE);
 
     }
 
@@ -219,7 +225,8 @@ public class Game {
     }
 
     public void exit() {
-        fbo.cleanUp();
+        outputFbo.cleanUp();
+        multiSampleFbo.cleanUp();
         PostProcessing.cleanUp();
         MasterParticle.cleanUp();
         MasterFont.cleanUp();
@@ -311,23 +318,23 @@ public class Game {
         float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
         cam.getPosition().y -= distance;
         cam.invertPitch();
-        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
+        renderer.renderScene(entities, normalMapEntities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
         cam.getPosition().y += distance;
         cam.invertPitch();
 
         waterFBOS.bindRefractionFrameBuffer();
-        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
+        renderer.renderScene(entities, normalMapEntities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));
 
 
         waterFBOS.unbindCurrentFrameBuffer();
-        fbo.bindFrameBuffer();
-        renderer.renderScene(entities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
+        multiSampleFbo.bindFrameBuffer();
+        renderer.renderScene(entities, normalMapEntities, world, lights, cam, new Vector4f(0, 1, 0, 100000));
         waterRenderer.render(waters, cam, sun);
 
         MasterParticle.render(cam);
-
-        fbo.unbindFrameBuffer();
-        PostProcessing.doPostProcessing(fbo.getColourTexture());
+        multiSampleFbo.unbindFrameBuffer();
+        multiSampleFbo.resolveToFbo(outputFbo);
+        PostProcessing.doPostProcessing(outputFbo.getColourTexture());
 
         MasterFont.render();
         guiGame.render();
