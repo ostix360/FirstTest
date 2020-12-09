@@ -4,6 +4,7 @@ package fr.ostix.game.graphics.textures;
 public class ModelTexture {
     private final int textureID;
     private int normalMapID;
+    private int specularMap;
 
     private float shineDamper = 0;
     private float reflectivity = 0;
@@ -13,6 +14,7 @@ public class ModelTexture {
     private boolean isTransparency = false;
     private boolean useFakeLighting = false;
     private boolean isInverseNormal = false;
+    private boolean hasSpecularMap = false;
 
     public ModelTexture(Texture texture) {
         this.textureID = texture.getId();
@@ -63,16 +65,33 @@ public class ModelTexture {
         return normalMapID;
     }
 
-    public void setNormalMapID(int normalMapID) {
+    public ModelTexture setNormalMapID(int normalMapID) {
         this.normalMapID = normalMapID;
+        return this;
     }
 
     public int getNumbersOfRows() {
         return numbersOfRows;
     }
 
-    public void setNumbersOfRows(int numbersOfRows) {
+    public ModelTexture setNumbersOfRows(int numbersOfRows) {
         this.numbersOfRows = numbersOfRows;
+        return this;
+    }
+
+
+    public int getSpecularMap() {
+        return specularMap;
+    }
+
+    public ModelTexture setSpecularMap(int specularMap) {
+        this.specularMap = specularMap;
+        this.hasSpecularMap = true;
+        return this;
+    }
+
+    public boolean hasSpecularMap() {
+        return hasSpecularMap;
     }
 
     public int geID() {

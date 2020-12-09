@@ -32,6 +32,8 @@ public class Shader extends ShaderProgram {
     private int location_toShadowMapSpace;
     private int location_shadowMap;
     private int location_textureEntity;
+    private int location_specularMap;
+    private int location_useSpecularMap;
 
     public Shader() {
         super("defaultShader.vert", "defaultShader.frag");
@@ -60,6 +62,8 @@ public class Shader extends ShaderProgram {
         location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
         location_shadowMap = super.getUniformLocation("shadowMap");
         location_textureEntity = super.getUniformLocation("textureEntity");
+        location_specularMap = super.getUniformLocation("specularMap");
+        location_useSpecularMap = super.getUniformLocation("useSpecularMap");
 
         location_lightPosition = new int[MAX_LIGHTS];
         location_lightColour = new int[MAX_LIGHTS];
@@ -73,7 +77,12 @@ public class Shader extends ShaderProgram {
 
     public void connectTextureUnits() {
         super.loadInt(location_textureEntity, 0);
+        super.loadInt(location_specularMap,1);
         super.loadInt(location_shadowMap, 5);
+    }
+
+    public void loadUseSpecularMap(boolean useMap){
+        super.loadBooleanToUniform(location_useSpecularMap,useMap);
     }
 
     public void loadShaderMapSpace(Matrix4f matrix) {

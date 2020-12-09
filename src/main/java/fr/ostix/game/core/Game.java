@@ -103,8 +103,10 @@ public class Game {
         fernModel.getModelTexture().setTransparency(true);
         TextureModel playerModel = new TextureModel(OBJFileLoader.loadModel("person", loader),
                 new ModelTexture(loader.loadTexture("playerTexture")));
-        TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lamp", loader),
-                new ModelTexture(loader.loadTexture("lamp")).setInverseNormal(true));
+        TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lantern", loader),
+                new ModelTexture(loader.loadTexture("lantern")).setInverseNormal(false).setSpecularMap(
+                        loader.loadTexture("specularMap/lanternS").getId()
+                ));
 
         Terrain terrain1 = new Terrain(0f, 0f, loader, texturePack, blendMap, "heightmap");
         Terrain terrain2 = new Terrain(1f, 0f, loader, texturePack, blendMap, "heightmap");
@@ -137,7 +139,8 @@ public class Game {
                     0, 0, 0, 5f));
         }
         TextureModel barrelModel = new TextureModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
-        barrelModel.getModelTexture().setShineDamper(10).setReflectivity(0.5f).setNormalMapID(loader.loadTexture("normalMap/barrelNormal").getId());
+        barrelModel.getModelTexture().setShineDamper(10).setReflectivity(0.5f).setNormalMapID(loader.loadTexture("normalMap/barrelNormal").getId())
+                .setSpecularMap(loader.loadTexture("specularMap/barrelS").getId());
 
         normalMapEntities.add(new Entity(barrelModel, new Vector3f(-75, 10, -75), 0, 0, 0, 1));
 
@@ -301,7 +304,7 @@ public class Game {
         Vector3f terraintPoint = picker.getCurrentTerrainPoint();
         if (terraintPoint != null) {
             this.lamp.setPosition(terraintPoint);
-            this.light.setPosition(new Vector3f(terraintPoint.x, terraintPoint.y + 12.5f, terraintPoint.z));
+            this.light.setPosition(new Vector3f(terraintPoint.x, terraintPoint.y + 12.5f, terraintPoint.z-5));
         }
 
         guiGame.update();

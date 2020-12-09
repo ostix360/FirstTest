@@ -19,6 +19,9 @@ import org.lwjgl.util.vector.Vector4f;
 import java.util.List;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+
 
 public class NormalMappingRenderer {
 
@@ -68,6 +71,11 @@ public class NormalMappingRenderer {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getModelTexture().geID());
 		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getModelTexture().getNormalMapID());
+		shader.loadUseSpecularMap(texture.hasSpecularMap());
+		if (texture.hasSpecularMap()){
+			GL13.glActiveTexture(GL13.GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, texture.getSpecularMap());
+		}
 	}
 
 	private void unbindTexturedModel() {
