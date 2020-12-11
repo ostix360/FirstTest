@@ -1,4 +1,4 @@
-#version 400 core
+#version 330
 
 in vec2 pass_textureCoords;
 in vec3 surfaceNormal;
@@ -7,7 +7,8 @@ in vec3 toCameraVector;
 in float visibility;
 in vec4 shadowCoords;
 
-out vec4 out_Color;
+layout(location = 0) out vec4 out_Color;
+layout(location = 1) out vec4 out_BrightColor;
 
 uniform sampler2D textureEntity;
 uniform sampler2D specularMap;
@@ -79,14 +80,17 @@ void main() {
         discard;
     }
 
+    out_BrightColor = vec4(0.0);
     if(useSpecularMap > 0.5){
         vec4 mapInfo = texture(specularMap, pass_textureCoords);
         totalSpecular *= mapInfo.r;
         if (mapInfo.g > 0.5){
+            out_BrightColor = textureColor + vec4(totalSpecular, 1.0);
             totalDiffuse = vec3(1.0);
         }
     }
 
     out_Color =  vec4(totalDiffuse, 1.0) * textureColor + vec4(totalSpecular, 1.0);
     out_Color = mix(vec4(skyColour, 1.0), out_Color, visibility);
+    out_BrightColor = vec4(0.0);
 }

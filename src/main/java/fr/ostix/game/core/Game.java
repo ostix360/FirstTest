@@ -68,6 +68,7 @@ public class Game {
     private Light sun;
     //      TEMP
     private Entity lamp;
+    private Entity barrel;
     private Light light;
 
     //*********WATER*******
@@ -82,6 +83,7 @@ public class Game {
     //********PostProcessing*******
     private Fbo multiSampleFbo;
     private Fbo outputFbo;
+    private Fbo outputFbo2;
 
     private void init() {
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("terrain/grassy2").getId());
@@ -142,7 +144,7 @@ public class Game {
         barrelModel.getModelTexture().setShineDamper(10).setReflectivity(0.5f).setNormalMapID(loader.loadTexture("normalMap/barrelNormal").getId())
                 .setExtraInfoMap(loader.loadTexture("specularMap/barrelS").getId());
 
-        normalMapEntities.add(new Entity(barrelModel, new Vector3f(-75, 10, -75), 0, 0, 0, 1));
+        normalMapEntities.add(barrel = new Entity(barrelModel, new Vector3f(75, 10, 75), 0, 0, 0, 1));
 
         this.lamp = new Entity(lamp, new Vector3f(100, getTerrain(world, 100, 0).getHeightOfTerrain(100, 0), 0), 0, 0, 0, 1);
         entities.add(this.lamp);
@@ -212,7 +214,7 @@ public class Game {
         PostProcessing.init(loader);
         multiSampleFbo = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight());
         outputFbo = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight(), Fbo.DEPTH_TEXTURE);
-
+        outputFbo2 = new Fbo(DisplayManager.getWidth(), DisplayManager.getHeight(), Fbo.DEPTH_TEXTURE);
     }
 
     public void start() {
@@ -228,6 +230,7 @@ public class Game {
     }
 
     public void exit() {
+        outputFbo2.cleanUp();
         outputFbo.cleanUp();
         multiSampleFbo.cleanUp();
         PostProcessing.cleanUp();
@@ -301,6 +304,7 @@ public class Game {
         picker.update();
         playerParticle.generateParticles(player.getPosition());
         MasterParticle.update(cam);
+        barrel.increaseRotation(0, 1, 0);
         Vector3f terraintPoint = picker.getCurrentTerrainPoint();
         if (terraintPoint != null) {
             this.lamp.setPosition(terraintPoint);
@@ -336,8 +340,9 @@ public class Game {
 
         MasterParticle.render(cam);
         multiSampleFbo.unbindFrameBuffer();
-        multiSampleFbo.resolveToFbo(outputFbo);
-        PostProcessing.doPostProcessing(outputFbo.getColourTexture());
+        multiSampleFbo.resolveToFbo(GL30.GL_COLOR_ATTACHMENT0, outputFbo);
+        multiSampleFbo.resolveToFbo(GL30.GL_COLOR_ATTACHMENT1, outputFbo2);
+        PostProcessing.doPostProcessing(outputFbo.getColourTexture(), outputFbo2.getColourTexture());
 
         MasterFont.render();
         guiGame.render();
