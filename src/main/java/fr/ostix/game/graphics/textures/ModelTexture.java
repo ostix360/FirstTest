@@ -84,7 +84,7 @@ public class ModelTexture {
         return specularMap;
     }
 
-    public ModelTexture setSpecularMap(int specularMap) {
+    public ModelTexture setExtraInfoMap(int specularMap) {
         this.specularMap = specularMap;
         this.hasSpecularMap = true;
         return this;

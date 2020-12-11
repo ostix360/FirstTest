@@ -41,7 +41,7 @@ void main() {
     }
     total /= totalsTexels;
 
-    float lightFactor = 1.0 - (clamp(total, 0.0, 0.5) * shadowCoords.w);
+    float lightFactor = 0.8 -  (clamp(total, 0.0, 0.5) * shadowCoords.w);
 
 
     vec3 unitNormal = normalize(surfaceNormal);
@@ -80,9 +80,9 @@ void main() {
     }
 
     if(useSpecularMap > 0.5){
-        vec4 mapinfo = texture(specularMap,pass_textureCoords);
-        totalSpecular *= mapinfo.r;
-        if(mapinfo.g > 5){
+        vec4 mapInfo = texture(specularMap, pass_textureCoords);
+        totalSpecular *= mapInfo.r;
+        if (mapInfo.g > 0.5){
             totalDiffuse = vec3(1.0);
         }
     }

@@ -103,9 +103,9 @@ public class Game {
         fernModel.getModelTexture().setTransparency(true);
         TextureModel playerModel = new TextureModel(OBJFileLoader.loadModel("person", loader),
                 new ModelTexture(loader.loadTexture("playerTexture")));
-        TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lantern", loader),
-                new ModelTexture(loader.loadTexture("lantern")).setInverseNormal(false).setSpecularMap(
-                        loader.loadTexture("specularMap/lanternS").getId()
+        TextureModel lamp = new TextureModel(OBJFileLoader.loadModel("lamp", loader),
+                new ModelTexture(loader.loadTexture("lamp")).setInverseNormal(false).setExtraInfoMap(
+                        loader.loadTexture("specularMap/lamp").getId()
                 ));
 
         Terrain terrain1 = new Terrain(0f, 0f, loader, texturePack, blendMap, "heightmap");
@@ -140,7 +140,7 @@ public class Game {
         }
         TextureModel barrelModel = new TextureModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
         barrelModel.getModelTexture().setShineDamper(10).setReflectivity(0.5f).setNormalMapID(loader.loadTexture("normalMap/barrelNormal").getId())
-                .setSpecularMap(loader.loadTexture("specularMap/barrelS").getId());
+                .setExtraInfoMap(loader.loadTexture("specularMap/barrelS").getId());
 
         normalMapEntities.add(new Entity(barrelModel, new Vector3f(-75, 10, -75), 0, 0, 0, 1));
 
@@ -304,7 +304,7 @@ public class Game {
         Vector3f terraintPoint = picker.getCurrentTerrainPoint();
         if (terraintPoint != null) {
             this.lamp.setPosition(terraintPoint);
-            this.light.setPosition(new Vector3f(terraintPoint.x, terraintPoint.y + 12.5f, terraintPoint.z-5));
+            this.light.setPosition(new Vector3f(terraintPoint.x, terraintPoint.y + 12.5f, terraintPoint.z));
         }
 
         guiGame.update();
@@ -317,13 +317,13 @@ public class Game {
 
         GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 
-        waterFBOS.bindReflectionFrameBuffer();
-        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
-        cam.getPosition().y -= distance;
-        cam.invertPitch();
-        renderer.renderScene(entities, normalMapEntities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
-        cam.getPosition().y += distance;
-        cam.invertPitch();
+//        waterFBOS.bindReflectionFrameBuffer();
+//        float distance = 2 * (cam.getPosition().getY() - waters.get(0).getHeight());
+//        cam.getPosition().y -= distance;
+//        cam.invertPitch();
+//        renderer.renderScene(entities, normalMapEntities, world, lights, cam, new Vector4f(0, 1, 0, -waters.get(0).getHeight() + 2f));
+//        cam.getPosition().y += distance;
+//        cam.invertPitch();
 
         waterFBOS.bindRefractionFrameBuffer();
         renderer.renderScene(entities, normalMapEntities, world, lights, cam, new Vector4f(0, -1, 0, waters.get(0).getHeight()));

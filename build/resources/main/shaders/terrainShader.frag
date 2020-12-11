@@ -42,7 +42,7 @@ void main() {
 
     total /= totalsTexels;
 
-    float lightFactor = 1.0 -  (clamp(total, 0.0, 0.6) * shadowCoords.w);
+    float lightFactor = 0.7 -  (clamp(total, 0.0, 0.4) * shadowCoords.w);
 
 
     vec4 blendMapColour = texture(blendMap, pass_textureCoords);
